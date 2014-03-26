@@ -1,0 +1,3562 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "name": "Citation",
+    "description": "Schema for one citation",
+    "type": "object",
+    "id": "http=>//data.easybib.com/citation-schema#",
+    "required": [
+        "source"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "institution" : {
+            "type": "integer"
+        },
+        "source": {
+            "title": "Source",
+            "type": "string",
+            "pattern": "^(advertisement|bible|blog|book|brochure|cartoon|chapter|collection|conference|congress|contributor|courtcase|custom|database|dictionary|digital|dissertation|dissertationabstract|editorial|email|encyclopedia|executiveorder|fedbill|fedreport|fedrule|film|govt|grammar|image|interview|introduction|journal|lecture|letter|magazine|mailinglist|manuscript|map|microform|miscellaneous|multivolume|musicalrecording|newsgroup|newsletter|newspaper|painting|pamphlet|patent|performance|photo|press|rawdata|report|review|scholarlyproject|software|statute|suffix|testimony|thesis|tv|website)$"
+        },
+        "advertisement": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "corp": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "bible": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "section": {
+                    "type": "string"
+                },
+                "subsection": {
+                    "type": "string"
+                },
+                "chstart": {
+                    "type": "string"
+                },
+                "vstart": {
+                    "type": "string"
+                },
+                "chend": {
+                    "type": "string"
+                },
+                "vend": {
+                    "type": "string"
+                }
+            }
+        },
+        "blog": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "reviewtype": {
+                    "type": "string"
+                },
+                "posttype": {
+                    "type": "string"
+                },
+                "commenttitle": {
+                    "type": "string"
+                },
+                "reviewedtitle": {
+                    "type": "string"
+                }
+            }
+        },
+        "book": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+
+            }
+        },
+        "brochure": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "corp": {
+                    "type": "string"
+                }
+            }
+        },
+        "cartoon": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "chapter": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "collection": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "editiontext": {
+                    "type": "string"
+                },
+                "vol": {
+                    "type": "string"
+                },
+                "series": {
+                    "type": "string"
+                },
+                "publisher": {
+                    "type": "string"
+                },
+                "start": {
+                    "type": "string"
+                },
+                "end": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "nonconsecutive": {
+                    "type": "string"
+                }
+            }
+        },
+        "conference": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "title2": {
+                    "type": "string"
+                },
+                "inst": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                }
+            }
+        },
+        "congress": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "congress": {
+                    "type": "string"
+                },
+                "part": {
+                    "type": "string"
+                },
+                "session": {
+                    "type": "string"
+                },
+                "bill": {
+                    "type": "string"
+                },
+                "publisher": {
+                    "type": "string"
+                },
+                "vol": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "committee": {
+                    "type": "string"
+                },
+                "billtype": {
+                    "type": "string"
+                }
+            }
+        },
+        "contributor": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+
+            }
+        },
+        "courtcase": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "country": {
+                    "type": "string"
+                },
+                "court": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "db": {
+                    "type": "string"
+                },
+                "dbname": {
+                    "type": "string"
+                },
+                "dbpage": {
+                    "type": "string"
+                },
+                "dbyear": {
+                    "type": "string"
+                },
+                "docket": {
+                    "type": "string"
+                },
+                "library": {
+                    "type": "string"
+                },
+                "recfound": {
+                    "type": "string"
+                },
+                "recno": {
+                    "type": "string"
+                },
+                "slip": {
+                    "type": "string"
+                },
+                "slippage": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "custom": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "citation": {
+                    "type": "string"
+                },
+                "footnote": {
+                    "type": "string"
+                }
+            }
+        },
+        "database": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "dictionary": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "wellknown": {
+                    "type": "string"
+                },
+                "defnum": {
+                    "type": "string"
+                },
+                "entry": {
+                    "type": "string"
+                }
+            }
+        },
+        "digital": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                }
+            }
+        },
+        "dissertation": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "yeargiven": {
+                    "type": "string"
+                },
+                "university": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                }
+            }
+        },
+        "dissertationabstract": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "university": {
+                    "type": "string"
+                },
+                "yeargiven": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "title2": {
+                    "type": "string"
+                }
+            }
+        },
+        "editorial": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "email": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "you": {
+                    "type": "string"
+                }
+            }
+        },
+        "encyclopedia": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "wellknown": {
+                    "type": "string"
+                }
+            }
+        },
+        "executiveorder": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "num": {
+                    "type": "string"
+                }
+            }
+        },
+        "fedbill": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "billnumber": {
+                    "type": "string"
+                },
+                "congnum": {
+                    "type": "string"
+                },
+                "billtype": {
+                    "type": "string"
+                },
+                "enacted": {
+                    "type": "string"
+                },
+                "house": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "fedreport": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "number": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "wherefrom": {
+                    "type": "string"
+                }
+            }
+        },
+        "fedrule": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "cfrpt": {
+                    "type": "string"
+                },
+                "cfrvol": {
+                    "type": "string"
+                },
+                "section": {
+                    "type": "string"
+                },
+                "sectionplus": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "film": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "mainperformers": {
+                    "type": "string"
+                },
+                "distrib": {
+                    "type": "string"
+                },
+                "transcript": {
+                    "type": "string"
+                }
+            }
+        },
+        "govt": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "agency": {
+                    "type": "string"
+                },
+                "office": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                }
+            }
+        },
+        "grammar": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+
+            }
+        },
+        "image": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "originallocation": {
+                    "type": "string"
+                }
+            }
+        },
+        "interview": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "interviewers": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "how": {
+                    "type": "string"
+                },
+                "transcript": {
+                    "type": "string"
+                }
+            }
+        },
+        "introduction": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "journal": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "abstract": {
+                    "type": "string"
+                },
+                "inpress": {
+                    "type": "string"
+                }
+            }
+        },
+        "lecture": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "org": {
+                    "type": "string"
+                }
+            }
+        },
+        "letter": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "towhom": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                }
+            }
+        },
+        "magazine": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "mailinglist": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "manuscript": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "worktype": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "stage": {
+                    "type": "string"
+                },
+                "univ": {
+                    "type": "string"
+                }
+            }
+        },
+        "map": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "microform": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "university": {
+                    "type": "string"
+                },
+                "yeargiven": {
+                    "type": "string"
+                }
+            }
+        },
+        "miscellaneous": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                }
+            }
+        },
+        "multivolume": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+
+            }
+        },
+        "musicalrecording": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "rectype": {
+                    "type": "string"
+                },
+                "songtitle": {
+                    "type": "string"
+                },
+                "songwriters": {
+                    "type": "string"
+                },
+                "songday": {
+                    "type": "string"
+                },
+                "songmonth": {
+                    "type": "string"
+                },
+                "songyear": {
+                    "type": "string"
+                },
+                "producer": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "title2": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "yearproduced": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                }
+            }
+        },
+        "newsgroup": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "newsletter": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "title2": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "start": {
+                    "type": "string"
+                },
+                "vol": {
+                    "type": "string"
+                }
+            }
+        },
+        "newspaper": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "painting": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "originallocation": {
+                    "type": "string"
+                },
+                "collection": {
+                    "type": "string"
+                },
+                "museum": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "idtype": {
+                    "type": "string"
+                },
+                "idnum": {
+                    "type": "string"
+                },
+                "medium": {
+                    "type": "string"
+                }
+            }
+        },
+        "pamphlet": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                }
+            }
+        },
+        "patent": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "assignee": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "dayfiled": {
+                    "type": "string"
+                },
+                "monthfiled": {
+                    "type": "string"
+                },
+                "yearfiled": {
+                    "type": "string"
+                }
+            }
+        },
+        "performance": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "title2": {
+                    "type": "string"
+                }
+            }
+        },
+        "photo": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "originallocation": {
+                    "type": "string"
+                },
+                "collection": {
+                    "type": "string"
+                },
+                "org": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "idtype": {
+                    "type": "string"
+                },
+                "idnum": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                }
+            }
+        },
+        "press": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "org": {
+                    "type": "string"
+                },
+                "dept": {
+                    "type": "string"
+                }
+            }
+        },
+        "rawdata": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "howpublished": {
+                    "type": "string"
+                }
+            }
+        },
+        "report": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "institution": {
+                    "type": "string"
+                },
+                "orgtype": {
+                    "type": "string"
+                },
+                "orgnum": {
+                    "type": "string"
+                },
+                "dept": {
+                    "type": "string"
+                }
+            }
+        },
+        "review": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "reviewedpub": {
+                    "type": "string"
+                },
+                "reviewtype": {
+                    "type": "string"
+                }
+            }
+        },
+        "scholarlyproject": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "software": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "statute": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "codified": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "lawnumber": {
+                    "type": "string"
+                },
+                "section": {
+                    "type": "string"
+                },
+                "sectionend": {
+                    "type": "string"
+                },
+                "chapter": {
+                    "type": "string"
+                },
+                "sectionplus": {
+                    "type": "string"
+                }
+            }
+        },
+        "suffix": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+
+            }
+        },
+        "testimony": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "who": {
+                    "type": "string"
+                }
+            }
+        },
+        "thesis": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "yeargiven": {
+                    "type": "string"
+                },
+                "university": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                }
+            }
+        },
+        "tv": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "mediatype": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "transcript": {
+                    "type": "string"
+                }
+            }
+        },
+        "website": {
+            "description": "Source type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "pubtype": {
+            "title": "Publication type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "main": {
+                    "type": "string",
+                    "pattern": "^(pubabstractsjournal|pubcdrom|pubdatabase|pubfederal|pubfilm|pubjournal|publive|pubmagazine|pubmicrofilm|pubnewspaper|pubnonperiodical|pubonline|pubother|pubreprint|pubtvr|pubnone)$"
+                },
+                "suffix": {
+                    "type": "string",
+                    "pattern": "^(pubabstractsjournal|pubcdrom|pubdatabase|pubfederal|pubfilm|pubjournal|publive|pubmagazine|pubmicrofilm|pubnewspaper|pubnonperiodical|pubonline|pubother|pubreprint|pubtvr|pubnone)$"
+                }
+            }
+        },
+        "pubabstractsjournal": {
+            "description": "Publication type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "issue": {
+                    "type": "string"
+                },
+                "restarts": {
+                    "type": "string"
+                },
+                "series": {
+                    "type": "string"
+                },
+                "seriesnumber": {
+                    "type": "string"
+                },
+                "volume": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "vol": {
+                    "type": "string"
+                },
+                "start": {
+                    "type": "string"
+                },
+                "end": {
+                    "type": "string"
+                },
+                "nonconsecutive": {
+                    "type": "string"
+                }
+            }
+        },
+        "pubcdrom": {
+            "description": "Publication type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "publisher": {
+                    "type": "string"
+                },
+                "editiontext": {
+                    "type": "string"
+                },
+                "vols": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                }
+            }
+        },
+        "pubdatabase": {
+            "description": "Publication type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "library": {
+                    "type": "string"
+                },
+                "db": {
+                    "type": "string"
+                },
+                "service": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "start": {
+                    "type": "string"
+                },
+                "end": {
+                    "type": "string"
+                },
+                "nonconsecutive": {
+                    "type": "string"
+                },
+                "searchtype": {
+                    "type": "string"
+                },
+                "searchtext": {
+                    "type": "string"
+                },
+                "dayaccessed": {
+                    "type": "string"
+                },
+                "monthaccessed": {
+                    "type": "string"
+                },
+                "yearaccessed": {
+                    "type": "string"
+                }
+            }
+        },
+        "pubfederal": {
+            "description": "Publication type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "congress": {
+                    "type": "string"
+                },
+                "vol": {
+                    "type": "string"
+                },
+                "publisher": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "start": {
+                    "type": "string"
+                },
+                "end": {
+                    "type": "string"
+                },
+                "nonconsecutive": {
+                    "type": "string"
+                }
+            }
+        },
+        "pubfilm": {
+            "description": "Publication type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "mediatype": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "distributor": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "mediatypeother": {
+                    "type": "string"
+                }
+            }
+        },
+        "pubjournal": {
+            "description": "Publication type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "issue": {
+                    "type": "string"
+                },
+                "restarts": {
+                    "type": "string"
+                },
+                "series": {
+                    "type": "string"
+                },
+                "seriesnumber": {
+                    "type": "string"
+                },
+                "volume": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "vol": {
+                    "type": "string"
+                },
+                "start": {
+                    "type": "string"
+                },
+                "end": {
+                    "type": "string"
+                },
+                "nonconsecutive": {
+                    "type": "string"
+                }
+            }
+        },
+        "publive": {
+            "description": "Publication type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                }
+            }
+        },
+        "pubmagazine": {
+            "description": "Publication type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "vol": {
+                    "type": "string"
+                },
+                "issue": {
+                    "type": "string"
+                },
+                "start": {
+                    "type": "string"
+                },
+                "end": {
+                    "type": "string"
+                },
+                "nonconsecutive": {
+                    "type": "string"
+                }
+            }
+        },
+        "pubmicrofilm": {
+            "description": "Publication type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "issue": {
+                    "type": "string"
+                },
+                "restarts": {
+                    "type": "string"
+                },
+                "series": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "volume": {
+                    "type": "string"
+                },
+                "start": {
+                    "type": "string"
+                },
+                "end": {
+                    "type": "string"
+                },
+                "nonconsecutive": {
+                    "type": "string"
+                }
+            }
+        },
+        "pubnewspaper": {
+            "description": "Publication type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "edition": {
+                    "type": "string"
+                },
+                "section": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "start": {
+                    "type": "string"
+                },
+                "end": {
+                    "type": "string"
+                },
+                "nonconsecutive": {
+                    "type": "string"
+                }
+            }
+        },
+        "pubnonperiodical": {
+            "description": "Publication type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "isbn": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "publisher": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "vol": {
+                    "type": "string"
+                },
+                "vols": {
+                    "type": "string"
+                },
+                "volstart": {
+                    "type": "string"
+                },
+                "volend": {
+                    "type": "string"
+                },
+                "editiontext": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "series": {
+                    "type": "string"
+                },
+                "start": {
+                    "type": "string"
+                },
+                "end": {
+                    "type": "string"
+                },
+                "nonconsecutive": {
+                    "type": "string"
+                },
+                "wellknown": {
+                    "type": "string"
+                },
+                "booksearch": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                }
+            }
+        },
+        "pubonline": {
+            "description": "Publication type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "dayaccessed": {
+                    "type": "string"
+                },
+                "monthaccessed": {
+                    "type": "string"
+                },
+                "yearaccessed": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "inst": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "showurl": {
+                    "type": "string"
+                }
+            }
+        },
+        "pubother": {
+            "description": "Publication type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "org": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "medium": {
+                    "type": "string"
+                }
+            }
+        },
+        "pubreprint": {
+            "description": "Publication type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "isbn": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "publisher": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "vol": {
+                    "type": "string"
+                },
+                "vols": {
+                    "type": "string"
+                },
+                "volstart": {
+                    "type": "string"
+                },
+                "volend": {
+                    "type": "string"
+                },
+                "editiontext": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "series": {
+                    "type": "string"
+                },
+                "start": {
+                    "type": "string"
+                },
+                "end": {
+                    "type": "string"
+                },
+                "nonconsecutive": {
+                    "type": "string"
+                },
+                "wellknown": {
+                    "type": "string"
+                }
+            }
+        },
+        "pubtvr": {
+            "description": "Publication type",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "month": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                },
+                "call": {
+                    "type": "string"
+                },
+                "network": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "medium": {
+                    "type": "string"
+                }
+            }
+        },
+        "key": {
+            "title": "Authentication Key",
+            "type": "string"
+        },
+        "style": {
+            "title": "Style",
+            "description": "The citation style",
+            "type": "string",
+            "pattern": "^(mla|mla7|apa|chicago)$",
+            "default": "mla7"
+        },
+        "contributors": {
+            "title": "Contributors",
+            "description": "List of contributors",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "first": {
+                        "type": "string"
+                    },
+                    "middle": {
+                        "type": "string"
+                    },
+                    "last": {
+                        "type": "string"
+                    },
+                    "suffix": {
+                        "type": "string"
+                    },
+                    "function": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "issn": {
+            "title": "ISSN number",
+            "type": "string"
+        },
+        "keywords": {
+            "title": "Keywords",
+            "type": "array"
+        },
+        "abstract": {
+            "title": "Abstract",
+            "description": "The abstract text.",
+            "type": "string"
+        },
+        "doi": {
+            "title": "DOI Number",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "doi": {
+                    "title": "DOI Number",
+                    "type": "string"
+                }
+            }
+        },
+        "datasource": {
+            "title": "Data Source",
+            "type": "string"
+        },
+        "oclc": {
+            "title": "OCLC number",
+            "type": "string"
+        },
+        "_id": {
+            "type": "string"
+        },
+        "_rev": {
+            "type": "string"
+        },
+        "listid": {
+            "type": "string"
+        },
+        "date": {
+            "title": "Date of creation",
+            "type": "string"
+        },
+        "tags": {
+            "type": "array"
+        },
+        "annotation": {
+            "type": [
+                "array",
+                "object"
+            ],
+            "properties": {
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "npnd": {
+            "type": "string"
+        }
+    },
+    "dependencies": {
+        "source": {
+            "oneOf": [
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^advertisement$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^bible$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^blog$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^book$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^brochure$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^cartoon$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^chapter$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^collection$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^conference$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^congress$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^contributor$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^courtcase$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^custom$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^database$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^dictionary$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^digital$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^dissertation$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^dissertationabstract$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^editorial$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^email$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^encyclopedia$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^executiveorder$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^fedbill$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^fedreport$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^fedrule$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^film$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^govt$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^grammar$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^image$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^interview$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^introduction$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^journal$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^lecture$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^letter$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^magazine$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^mailinglist$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^manuscript$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^map$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^microform$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^miscellaneous$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^multivolume$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^musicalrecording$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^newsgroup$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^newsletter$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^newspaper$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^painting$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^pamphlet$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^patent$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^performance$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^photo$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^press$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^rawdata$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^report$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^review$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^scholarlyproject$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^software$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^statute$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^suffix$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^testimony$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^thesis$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^tv$"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "source"
+                    ],
+                    "properties": {
+                        "source": {
+                            "pattern": "^website$"
+                        }
+                    }
+                }
+            ]
+        },
+        "advertisement": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^advertisement$"
+                }
+            }
+        },
+        "bible": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^bible$"
+                }
+            }
+        },
+        "blog": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^blog$"
+                }
+            }
+        },
+        "book": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^book$"
+                }
+            }
+        },
+        "brochure": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^brochure$"
+                }
+            }
+        },
+        "cartoon": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^cartoon$"
+                }
+            }
+        },
+        "chapter": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^chapter$"
+                }
+            }
+        },
+        "collection": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^collection$"
+                }
+            }
+        },
+        "conference": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^conference$"
+                }
+            }
+        },
+        "congress": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^congress$"
+                }
+            }
+        },
+        "contributor": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^contributor$"
+                }
+            }
+        },
+        "courtcase": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^courtcase$"
+                }
+            }
+        },
+        "custom": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^custom$"
+                }
+            }
+        },
+        "database": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^database$"
+                }
+            }
+        },
+        "dictionary": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^dictionary$"
+                }
+            }
+        },
+        "digital": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^digital$"
+                }
+            }
+        },
+        "dissertation": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^dissertation$"
+                }
+            }
+        },
+        "dissertationabstract": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^dissertationabstract$"
+                }
+            }
+        },
+        "editorial": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^editorial$"
+                }
+            }
+        },
+        "email": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^email$"
+                }
+            }
+        },
+        "encyclopedia": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^encyclopedia$"
+                }
+            }
+        },
+        "executiveorder": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^executiveorder$"
+                }
+            }
+        },
+        "fedbill": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^fedbill$"
+                }
+            }
+        },
+        "fedreport": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^fedreport$"
+                }
+            }
+        },
+        "fedrule": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^fedrule$"
+                }
+            }
+        },
+        "film": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^film$"
+                }
+            }
+        },
+        "govt": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^govt$"
+                }
+            }
+        },
+        "grammar": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^grammar$"
+                }
+            }
+        },
+        "image": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^image$"
+                }
+            }
+        },
+        "interview": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^interview$"
+                }
+            }
+        },
+        "introduction": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^introduction$"
+                }
+            }
+        },
+        "journal": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^journal$"
+                }
+            }
+        },
+        "lecture": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^lecture$"
+                }
+            }
+        },
+        "letter": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^letter$"
+                }
+            }
+        },
+        "magazine": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^magazine$"
+                }
+            }
+        },
+        "mailinglist": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^mailinglist$"
+                }
+            }
+        },
+        "manuscript": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^manuscript$"
+                }
+            }
+        },
+        "map": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^map$"
+                }
+            }
+        },
+        "microform": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^microform$"
+                }
+            }
+        },
+        "miscellaneous": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^miscellaneous$"
+                }
+            }
+        },
+        "multivolume": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^multivolume$"
+                }
+            }
+        },
+        "musicalrecording": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^musicalrecording$"
+                }
+            }
+        },
+        "newsgroup": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^newsgroup$"
+                }
+            }
+        },
+        "newsletter": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^newsletter$"
+                }
+            }
+        },
+        "newspaper": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^newspaper$"
+                }
+            }
+        },
+        "painting": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^painting$"
+                }
+            }
+        },
+        "pamphlet": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^pamphlet$"
+                }
+            }
+        },
+        "patent": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^patent$"
+                }
+            }
+        },
+        "performance": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^performance$"
+                }
+            }
+        },
+        "photo": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^photo$"
+                }
+            }
+        },
+        "press": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^press$"
+                }
+            }
+        },
+        "rawdata": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^rawdata$"
+                }
+            }
+        },
+        "report": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^report$"
+                }
+            }
+        },
+        "review": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^review$"
+                }
+            }
+        },
+        "scholarlyproject": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^scholarlyproject$"
+                }
+            }
+        },
+        "software": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^software$"
+                }
+            }
+        },
+        "statute": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^statute$"
+                }
+            }
+        },
+        "suffix": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^suffix$"
+                }
+            }
+        },
+        "testimony": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^testimony$"
+                }
+            }
+        },
+        "thesis": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^thesis$"
+                }
+            }
+        },
+        "tv": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^tv$"
+                }
+            }
+        },
+        "website": {
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "pattern": "^website$"
+                }
+            }
+        },
+        "pubabstractsjournal": {
+            "required": [
+                "pubtype"
+            ],
+            "properties": {
+                "oneOf": [
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "main": {
+                                    "pattern": "^pubabstractsjournal$"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "suffix": {
+                                    "pattern": "^pubabstractsjournal$"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "pubcdrom": {
+            "required": [
+                "pubtype"
+            ],
+            "properties": {
+                "oneOf": [
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "main": {
+                                    "pattern": "^pubcdrom$"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "suffix": {
+                                    "pattern": "^pubcdrom$"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "pubdatabase": {
+            "required": [
+                "pubtype"
+            ],
+            "properties": {
+                "oneOf": [
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "main": {
+                                    "pattern": "^pubdatabase$"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "suffix": {
+                                    "pattern": "^pubdatabase$"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "pubfederal": {
+            "required": [
+                "pubtype"
+            ],
+            "properties": {
+                "oneOf": [
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "main": {
+                                    "pattern": "^pubfederal$"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "suffix": {
+                                    "pattern": "^pubfederal$"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "pubfilm": {
+            "required": [
+                "pubtype"
+            ],
+            "properties": {
+                "oneOf": [
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "main": {
+                                    "pattern": "^pubfilm$"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "suffix": {
+                                    "pattern": "^pubfilm$"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "pubjournal": {
+            "required": [
+                "pubtype"
+            ],
+            "properties": {
+                "oneOf": [
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "main": {
+                                    "pattern": "^pubjournal$"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "suffix": {
+                                    "pattern": "^pubjournal$"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "publive": {
+            "required": [
+                "pubtype"
+            ],
+            "properties": {
+                "oneOf": [
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "main": {
+                                    "pattern": "^publive$"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "suffix": {
+                                    "pattern": "^publive$"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "pubmagazine": {
+            "required": [
+                "pubtype"
+            ],
+            "properties": {
+                "oneOf": [
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "main": {
+                                    "pattern": "^pubmagazine$"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "suffix": {
+                                    "pattern": "^pubmagazine$"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "pubmicrofilm": {
+            "required": [
+                "pubtype"
+            ],
+            "properties": {
+                "oneOf": [
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "main": {
+                                    "pattern": "^pubmicrofilm$"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "suffix": {
+                                    "pattern": "^pubmicrofilm$"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "pubnewspaper": {
+            "required": [
+                "pubtype"
+            ],
+            "properties": {
+                "oneOf": [
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "main": {
+                                    "pattern": "^pubnewspaper$"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "suffix": {
+                                    "pattern": "^pubnewspaper$"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "pubnonperiodical": {
+            "required": [
+                "pubtype"
+            ],
+            "properties": {
+                "oneOf": [
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "main": {
+                                    "pattern": "^pubnonperiodical$"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "suffix": {
+                                    "pattern": "^pubnonperiodical$"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "pubonline": {
+            "required": [
+                "pubtype"
+            ],
+            "properties": {
+                "oneOf": [
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "main": {
+                                    "pattern": "^pubonline$"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "suffix": {
+                                    "pattern": "^pubonline$"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "pubother": {
+            "required": [
+                "pubtype"
+            ],
+            "properties": {
+                "oneOf": [
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "main": {
+                                    "pattern": "^pubother$"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "suffix": {
+                                    "pattern": "^pubother$"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "pubreprint": {
+            "required": [
+                "pubtype"
+            ],
+            "properties": {
+                "oneOf": [
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "main": {
+                                    "pattern": "^pubreprint$"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "suffix": {
+                                    "pattern": "^pubreprint$"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "pubtvr": {
+            "required": [
+                "pubtype"
+            ],
+            "properties": {
+                "oneOf": [
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "main": {
+                                    "pattern": "^pubtvr$"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "pubtype": {
+                            "required": [
+                                "pubtype"
+                            ],
+                            "properties": {
+                                "suffix": {
+                                    "pattern": "^pubtvr$"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}
