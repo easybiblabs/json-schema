@@ -36,6 +36,11 @@ class Undefined extends Constraint
             );
         }
 
+        return $this->checkAnySchema($value, $schema, $path, $i);
+    }
+
+    protected function checkAnySchema($value, $schema = null, $path = null, $i = null)
+    {
         $i = is_null($i) ? "" : $i;
         $path = $this->incrementPath($path, $i);
 
@@ -302,5 +307,57 @@ class Undefined extends Constraint
         }
 
         return $jsonSchema;
+    }
+
+    public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
+    {
+        $classes[$schemaId]['Undefined'] = uniqid('Undefined');
+
+        $code = '
+trait Trait'.$classes[$schemaId]['Undefined'].'
+{
+    public function check($value, $schema = null, $path = null, $i = null)
+    {
+        ';
+        if (is_null($schema)) {
+            $code .= 'return;';
+        }
+
+        if (!is_object($schema)) {
+            $code .= '
+            throw new InvalidArgumentException(
+                "Given schema must be an object in " . $path
+                . " but is a '.gettype($schema).'"
+            );
+            ';
+        }
+        $code .= '
+        parent::checkAnySchema($value, null, $path, $i);
+    }
+    public function validateTypes($value, $schema = null, $path = null, $i = null)
+    {
+        $schema = unserialize(\''.serialize($schema).'\');
+        parent::validateTypes($value, $schema, $path, $i);
+    }
+    protected function validateOfProperties($value, $schema, $path, $i = "")
+    {
+        $schema = unserialize(\''.serialize($schema).'\');
+        parent::validateOfProperties($value, $schema, $path, $i);
+    }
+    protected function validateCommonProperties($value, $schema = null, $path = null, $i = "")
+    {
+        $schema = unserialize(\''.serialize($schema).'\');
+        parent::validateCommonProperties($value, $schema, $path, $i);
+    }
+}
+
+class '.$classes[$schemaId]['Undefined'].' extends Undefined
+{
+    use Trait'.$classes[$schemaId]['Constraint'].';
+    use Trait'.$classes[$schemaId]['Undefined'].';
+}
+        ';
+
+        return array('code' => $code, 'classes' => $classes);
     }
 }

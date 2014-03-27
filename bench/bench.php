@@ -11,17 +11,20 @@ $data = json_decode(file_get_contents(__DIR__.'/data.json'));
 $refResolver = new JsonSchema\RefResolver($retriever);
 $refResolver->resolve($schema, 'file://' . __DIR__);
 
+$compiled = JsonSchema\Validator::compile(null, $schema);
+file_put_contents('tmp.php', $compiled['code']);
+include('tmp.php');
+$validator = new $compiled['validator']();
+
 $start = microtime(true);
 
-$count = 500;
+$count = 50;
 
 for ($i = 0; $i < $count; $i++)
 {
-    $tmpSchema = clone $schema;
 
     // Validate
-    $validator = new JsonSchema\Validator();
-    $validator->check($data, $tmpSchema);
+    $validator->check($data);
 
     if (!$validator->isValid()) {
         echo "JSON does not validate. Violations:\n";

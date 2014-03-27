@@ -22,18 +22,37 @@ class Collection extends Constraint
      */
     public function check($value, $schema = null, $path = null, $i = null)
     {
+        $this->checkNoSchema(
+            $value,
+            $path,
+            $i,
+            isset($schema->minItems) ? $schema->minItems : null,
+            isset($schema->maxItems) ? $schema->maxItems : null,
+            isset($schema->uniqueItems),
+            isset($schema->items)
+        );
+
+        $items = isset($schema->items);
+        // Verify items
+        if ($items) {
+            $this->validateItems($value, $schema, $path, $i);
+        }
+    }
+
+    public function checkNoSchema($value, $path = null, $i = null, $minItems = null, $maxItems = null, $uniqueItems = false, $items = false)
+    {
         // Verify minItems
-        if (isset($schema->minItems) && count($value) < $schema->minItems) {
-            $this->addError($path, "There must be a minimum of " . $schema->minItems . " in the array");
+        if (null != $minItems && count($value) < $minItems) {
+            $this->addError($path, "There must be a minimum of " . $minItems . " in the array");
         }
 
         // Verify maxItems
-        if (isset($schema->maxItems) && count($value) > $schema->maxItems) {
-            $this->addError($path, "There must be a maximum of " . $schema->maxItems . " in the array");
+        if (isset($maxItems) && count($value) > $maxItems) {
+            $this->addError($path, "There must be a maximum of " . $maxItems . " in the array");
         }
 
         // Verify uniqueItems
-        if (isset($schema->uniqueItems)) {
+        if ($uniqueItems) {
             $unique = $value;
             if (is_array($value) && count($value)) {
                 $unique = array_map(function($e) { return var_export($e, true); }, $value);
@@ -41,11 +60,6 @@ class Collection extends Constraint
             if (count(array_unique($unique)) != count($value)) {
                 $this->addError($path, "There are no duplicates allowed in the array");
             }
-        }
-
-        // Verify items
-        if (isset($schema->items)) {
-            $this->validateItems($value, $schema, $path, $i);
         }
     }
 
@@ -108,5 +122,42 @@ class Collection extends Constraint
                 }
             }
         }
+    }
+
+    public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
+    {
+        $classes[$schemaId]['Collection'] = uniqid('Collection');
+
+        $code = '
+trait Trait'.$classes[$schemaId]['Collection'].'
+{
+    public function check($value, $schema = null, $path = null, $i = null)
+    {
+        $this->checkNoSchema(
+            $value,
+            $path,
+            $i,
+            '.var_export(isset($schema->minItems) ? $schema->minItems : null, true).',
+            '.var_export(isset($schema->maxItems) ? $schema->maxItems : null, true).',
+            '.var_export(isset($schema->uniqueItems), true).',
+            '.var_export(isset($schema->items), true).'
+        );
+
+        $items = isset($schema->items);
+        // Verify items
+        if ($items) {
+            $this->validateItems($value, $schema, $path, $i);
+        }
+    }
+}
+
+class '.$classes[$schemaId]['Collection'].' extends Collection
+{
+    use Trait'.$classes[$schemaId]['Constraint'].';
+    use Trait'.$classes[$schemaId]['Collection'].';
+}
+        ';
+
+        return array('code' => $code, 'classes' => $classes);
     }
 }

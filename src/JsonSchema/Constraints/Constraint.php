@@ -137,10 +137,7 @@ abstract class Constraint implements ConstraintInterface
      */
     protected function checkArray($value, $schema = null, $path = null, $i = null)
     {
-        $validator = new Collection($this->checkMode, $this->uriRetriever);
-        $validator->check($value, $schema, $path, $i);
-
-        $this->addErrors($validator->getErrors());
+        $this->checkValidator(new Collection($this->checkMode, $this->uriRetriever), $value, $schema, $path, $i);
     }
 
     /**
@@ -154,10 +151,7 @@ abstract class Constraint implements ConstraintInterface
      */
     protected function checkObject($value, $schema = null, $path = null, $i = null, $patternProperties = null)
     {
-        $validator = new Object($this->checkMode, $this->uriRetriever);
-        $validator->check($value, $schema, $path, $i, $patternProperties);
-
-        $this->addErrors($validator->getErrors());
+        $this->checkValidator(new Object($this->checkMode, $this->uriRetriever), $value, $schema, $path, $i, $patternProperties);
     }
 
     /**
@@ -170,10 +164,7 @@ abstract class Constraint implements ConstraintInterface
      */
     protected function checkType($value, $schema = null, $path = null, $i = null)
     {
-        $validator = new Type($this->checkMode, $this->uriRetriever);
-        $validator->check($value, $schema, $path, $i);
-
-        $this->addErrors($validator->getErrors());
+        $this->checkValidator(new Type($this->checkMode, $this->uriRetriever), $value, $schema, $path, $i);
     }
 
     /**
@@ -186,10 +177,7 @@ abstract class Constraint implements ConstraintInterface
      */
     protected function checkUndefined($value, $schema = null, $path = null, $i = null)
     {
-        $validator = new Undefined($this->checkMode, $this->uriRetriever);
-        $validator->check($value, $schema, $path, $i);
-
-        $this->addErrors($validator->getErrors());
+        $this->checkValidator(new Undefined($this->checkMode, $this->uriRetriever), $value, $schema, $path, $i);
     }
 
     /**
@@ -202,10 +190,7 @@ abstract class Constraint implements ConstraintInterface
      */
     protected function checkString($value, $schema = null, $path = null, $i = null)
     {
-        $validator = new String($this->checkMode, $this->uriRetriever);
-        $validator->check($value, $schema, $path, $i);
-
-        $this->addErrors($validator->getErrors());
+        $this->checkValidator(new String($this->checkMode, $this->uriRetriever), $value, $schema, $path, $i);
     }
 
     /**
@@ -218,10 +203,7 @@ abstract class Constraint implements ConstraintInterface
      */
     protected function checkNumber($value, $schema = null, $path = null, $i = null)
     {
-        $validator = new Number($this->checkMode, $this->uriRetriever);
-        $validator->check($value, $schema, $path, $i);
-
-        $this->addErrors($validator->getErrors());
+        $this->checkValidator(new Number($this->checkMode, $this->uriRetriever), $value, $schema, $path, $i);
     }
 
     /**
@@ -234,16 +216,17 @@ abstract class Constraint implements ConstraintInterface
      */
     protected function checkEnum($value, $schema = null, $path = null, $i = null)
     {
-        $validator = new Enum($this->checkMode, $this->uriRetriever);
-        $validator->check($value, $schema, $path, $i);
-
-        $this->addErrors($validator->getErrors());
+        $this->checkValidator(new Enum($this->checkMode, $this->uriRetriever), $value, $schema, $path, $i);
     }
 
     protected function checkFormat($value, $schema = null, $path = null, $i = null)
     {
-        $validator = new Format($this->checkMode, $this->uriRetriever);
-        $validator->check($value, $schema, $path, $i);
+        $this->checkValidator(new Format($this->checkMode, $this->uriRetriever), $value, $schema, $path, $i);
+    }
+
+    protected function checkValidator($validator, $value, $schema = null, $path = null, $i = null, $patternProperties = null)
+    {
+        $validator->check($value, $schema, $path, $i, $patternProperties);
 
         $this->addErrors($validator->getErrors());
     }
@@ -260,5 +243,37 @@ abstract class Constraint implements ConstraintInterface
         $jsonSchema = $this->uriRetriever->retrieve($uri);
         // TODO validate using schema
         return $jsonSchema;
+    }
+
+    public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
+    {
+        $classes[$schemaId]['Constraint'] = uniqid('Constraint');
+        $code = '';
+
+        $compiled = Collection::compile($schemaId, $schema, $checkMode, $uriRetriever, $classes);
+        $classes = $compiled['classes'];
+        $code .= $compiled['code'];
+
+        $compiled = Undefined::compile($schemaId, $schema, $checkMode, $uriRetriever, $classes);
+        $classes = $compiled['classes'];
+        $code .= $compiled['code'];
+
+        $code .= '
+trait Trait'.$classes[$schemaId]['Constraint'].'
+{
+    protected function checkArray($value, $schema = null, $path = null, $i = null)
+    {
+        $collection = new '.$classes[$schemaId]['Collection'].'();
+        $this->checkValidator($collection, $value, $schema, $path, $i);
+    }
+}
+
+abstract class '.$classes[$schemaId]['Constraint'].' extends Constraint
+{
+    use Trait'.$classes[$schemaId]['Constraint'].';
+}
+        ';
+
+        return array('code' => $code, 'classes' => $classes);
     }
 }

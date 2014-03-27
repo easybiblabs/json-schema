@@ -38,6 +38,19 @@ abstract class BaseTestCase extends \PHPUnit_Framework_TestCase
         $validator->check(json_decode($input), json_decode($schema));
         $this->assertTrue($validator->isValid(), print_r($validator->getErrors(), true));
     }
+    /**
+     * @dataProvider getValidTests
+     */
+    public function testValidCasesCompiled($input, $schema, $checkMode = Validator::CHECK_MODE_NORMAL)
+    {
+        $compiled = Validator::compile(null, json_decode($schema), $checkMode);
+        file_put_contents('tmp.php', $compiled['code']);
+        include('tmp.php');
+        $validator = new $compiled['validator']();
+
+        $validator->check(json_decode($input));
+        $this->assertTrue($validator->isValid(), print_r($validator->getErrors(), true));
+    }
 
     abstract public function getValidTests();
 
