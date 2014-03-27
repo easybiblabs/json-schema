@@ -153,8 +153,9 @@ class Object extends Constraint
 
         $prependCode = '';
         $code = '
-trait Trait'.$classes[$schemaId]['Object'].'
+class '.$classes[$schemaId]['Object'].' extends Object
 {
+    use Trait'.$classes[$schemaId]['Constraint'].';
     function check($element, $definition = null, $path = null, $additionalProp = null, $patternProperties = null)
     {
         if ($element instanceof Undefined) {
@@ -292,12 +293,6 @@ trait Trait'.$classes[$schemaId]['Object'].'
             }
         }
     }
-}
-
-class '.$classes[$schemaId]['Object'].' extends Object
-{
-    use Trait'.$classes[$schemaId]['Constraint'].';
-    use Trait'.$classes[$schemaId]['Object'].';
 }
         ';
 

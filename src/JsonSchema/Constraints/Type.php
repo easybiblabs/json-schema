@@ -119,8 +119,9 @@ class Type extends Constraint
 
         $prependCode = '';
         $code = '
-trait Trait'.$classes[$schemaId]['Type'].'
+class '.$classes[$schemaId]['Type'].' extends Type
 {
+    use Trait'.$classes[$schemaId]['Constraint'].';
     public function check($value = null, $schema = null, $path = null, $i = null)
     {';
         $type = isset($schema->type) ? $schema->type : null;
@@ -177,14 +178,7 @@ trait Trait'.$classes[$schemaId]['Type'].'
             $this->addError($path, gettype($value) . " value found, but a " . '.var_export($type, true).' . " is required");
         }
     }
-}
-
-class '.$classes[$schemaId]['Type'].' extends Type
-{
-    use Trait'.$classes[$schemaId]['Constraint'].';
-    use Trait'.$classes[$schemaId]['Type'].';
-}
-        ';
+}';
 
         return array('code' => $prependCode.$code, 'classes' => $classes);
     }

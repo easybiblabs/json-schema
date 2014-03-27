@@ -41,8 +41,9 @@ class Enum extends Constraint
         $classes[$schemaId]['Enum'] = uniqid('Enum');
 
         $code = '
-trait Trait'.$classes[$schemaId]['Enum'].'
+class '.$classes[$schemaId]['Enum'].' extends Enum
 {
+    use Trait'.$classes[$schemaId]['Constraint'].';
     public function check($element, $schema = null, $path = null, $i = null)
     {
         ';
@@ -63,12 +64,6 @@ trait Trait'.$classes[$schemaId]['Enum'].'
         $code .= '
         $this->addError($path, "does not have a value in the enumeration " . '.var_export(print_r($schema->enum, true), true).');
     }
-}
-
-class '.$classes[$schemaId]['Enum'].' extends Enum
-{
-    use Trait'.$classes[$schemaId]['Constraint'].';
-    use Trait'.$classes[$schemaId]['Enum'].';
 }
         ';
 

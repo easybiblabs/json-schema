@@ -172,8 +172,9 @@ class Format extends Constraint
         $classes[$schemaId]['Format'] = uniqid('Format');
 
         $code = '
-trait Trait'.$classes[$schemaId]['Format'].'
+class '.$classes[$schemaId]['Format'].' extends Format
 {
+    use Trait'.$classes[$schemaId]['Constraint'].';
     public function check($element, $schema = null, $path = null, $i = null)
     {
         ';
@@ -184,12 +185,6 @@ trait Trait'.$classes[$schemaId]['Format'].'
         }
         $code .= '
     }
-}
-
-class '.$classes[$schemaId]['Format'].' extends Format
-{
-    use Trait'.$classes[$schemaId]['Constraint'].';
-    use Trait'.$classes[$schemaId]['Format'].';
 }
         ';
 

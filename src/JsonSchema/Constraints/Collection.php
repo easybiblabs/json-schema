@@ -128,8 +128,9 @@ class Collection extends Constraint
 
         $prependCode = '';
         $code = '
-trait Trait'.$classes[$schemaId]['Collection'].'
+class '.$classes[$schemaId]['Collection'].' extends Collection
 {
+    use Trait'.$classes[$schemaId]['Constraint'].';
     public function check($value, $schema = null, $path = null, $i = null)
     {
         $this->checkNoSchema(
@@ -277,14 +278,7 @@ trait Trait'.$classes[$schemaId]['Collection'].'
         }
         $code .= '
     }
-}
-
-class '.$classes[$schemaId]['Collection'].' extends Collection
-{
-    use Trait'.$classes[$schemaId]['Constraint'].';
-    use Trait'.$classes[$schemaId]['Collection'].';
-}
-        ';
+}';
 
         return array('code' => $prependCode.$code, 'classes' => $classes);
     }

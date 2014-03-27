@@ -320,8 +320,9 @@ class Undefined extends Constraint
 
         $prependCode = '';
         $code = '
-trait Trait'.$classes[$schemaId]['Undefined'].'
+class '.$classes[$schemaId]['Undefined'].' extends Undefined
 {
+    use Trait'.$classes[$schemaId]['Constraint'].';
     public function check($value, $schema = null, $path = null, $i = null)
     {
         ';
@@ -620,14 +621,7 @@ trait Trait'.$classes[$schemaId]['Undefined'].'
     }';
     }
     $code .= '
-}
-
-class '.$classes[$schemaId]['Undefined'].' extends Undefined
-{
-    use Trait'.$classes[$schemaId]['Constraint'].';
-    use Trait'.$classes[$schemaId]['Undefined'].';
-}
-        ';
+}';
 
         return array('code' => $prependCode.$code, 'classes' => $classes);
     }

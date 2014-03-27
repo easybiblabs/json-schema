@@ -88,8 +88,9 @@ class Number extends Constraint
         $null = true;
 
         $code = '
-trait Trait'.$classes[$schemaId]['Number'].'
+class '.$classes[$schemaId]['Number'].' extends Number
 {
+    use Trait'.$classes[$schemaId]['Constraint'].';
     public function check($element, $schema = null, $path = null, $i = null)
     {
         ';
@@ -164,14 +165,7 @@ trait Trait'.$classes[$schemaId]['Number'].'
         $code .= '
         $this->checkFormat($element, null, $path, $i);
     }
-}
-
-class '.$classes[$schemaId]['Number'].' extends Number
-{
-    use Trait'.$classes[$schemaId]['Constraint'].';
-    use Trait'.$classes[$schemaId]['Number'].';
-}
-        ';
+}';
 
         return $null ? null : array('code' => $code, 'classes' => $classes);
     }

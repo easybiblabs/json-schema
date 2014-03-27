@@ -47,8 +47,10 @@ class String extends Constraint
         $null = true;
 
         $code = '
-trait Trait'.$classes[$schemaId]['String'].'
+class '.$classes[$schemaId]['String'].' extends String
 {
+    use Trait'.$classes[$schemaId]['Constraint'].';
+
     public function check($element, $schema = null, $path = null, $i = null)
     {
         ';
@@ -82,12 +84,6 @@ trait Trait'.$classes[$schemaId]['String'].'
         $code .= '
         $this->checkFormat($element, null, $path, $i);
     }
-}
-
-class '.$classes[$schemaId]['String'].' extends String
-{
-    use Trait'.$classes[$schemaId]['Constraint'].';
-    use Trait'.$classes[$schemaId]['String'].';
 }
         ';
 
