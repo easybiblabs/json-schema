@@ -313,6 +313,7 @@ class Undefined extends Constraint
     {
         $classes[$schemaId]['Undefined'] = uniqid('Undefined');
 
+        $prependCode = '';
         $code = '
 trait Trait'.$classes[$schemaId]['Undefined'].'
 {
@@ -361,9 +362,105 @@ trait Trait'.$classes[$schemaId]['Undefined'].'
 
     protected function validateOfProperties($value, $schema, $path, $i = "")
     {
-        $schema = unserialize(\''.serialize($schema).'\');
-        parent::validateOfProperties($value, $schema, $path, $i);
+        if ($value instanceof Undefined) {
+            return;
+        }';
+
+        if (isset($schema->allOf)) {
+            $code .= '$isValid = true;';
+            foreach ($schema->allOf as $allOf) {
+                $code .= '
+                    $initErrors = $this->getErrors();';
+
+                $id = md5(serialize($allOf));
+                $compiled = Constraint::compile($id, $allOf, $checkMode, $uriRetriever, $classes);
+                $prependCode .= $compiled['code'];
+                $classes = $compiled['classes'];
+                $code .= '
+                    $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);
+                ';
+
+                $code .= '
+                $isValid = $isValid && (count($this->getErrors()) == count($initErrors));';
+            }
+            $code .= '
+            if (!$isValid) {
+                $this->addError($path, "failed to match all schemas");
+            }';
+        }
+
+        if (isset($schema->anyOf)) {
+            $code .= '
+            $isValid = false;
+            $startErrors = $this->getErrors();';
+            foreach ($schema->anyOf as $anyOf) {
+                $code .= '
+                if (!$isValid) {
+                    $initErrors = $this->getErrors();';
+
+                    $id = md5(serialize($anyOf));
+                    $compiled = Constraint::compile($id, $anyOf, $checkMode, $uriRetriever, $classes);
+                    $prependCode .= $compiled['code'];
+                    $classes = $compiled['classes'];
+                    $code .= '
+                        $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);
+                    ';
+
+                    $code .= '
+                    $isValid = (count($this->getErrors()) == count($initErrors));
+                }';
+            }
+            $code .= '
+            if (!$isValid) {
+                $this->addError($path, "failed to match at least one schema");
+            } else {
+                $this->errors = $startErrors;
+            }';
+        }
+
+        if (isset($schema->oneOf)) {
+            $code .= '
+            $allErrors = array();
+            $matchedSchemas = 0;
+            $startErrors = $this->getErrors();';
+            foreach ($schema->oneOf as $oneOf) {
+                $code .= '
+                    $this->errors = array();';
+
+                $id = md5(serialize($oneOf));
+                $compiled = Constraint::compile($id, $oneOf, $checkMode, $uriRetriever, $classes);
+                $prependCode .= $compiled['code'];
+                $classes = $compiled['classes'];
+                $code .= '
+                    $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);
+                ';
+
+                $code .= '
+                if (count($this->getErrors()) == 0) {
+                    $matchedSchemas++;
+                }
+                $allErrors = array_merge($allErrors, array_values($this->getErrors()));
+                ';
+            }
+            $code .= '
+            if ($matchedSchemas !== 1) {
+                $this->addErrors(
+                    array_merge(
+                        $allErrors,
+                        array(array(
+                            "property" => $path,
+                            "message" => "failed to match exactly one schema"
+                        ),),
+                        $startErrors
+                    )
+                );
+            } else {
+                $this->errors = $startErrors;
+            }';
+        }
+        $code .= '
     }
+
     protected function validateCommonProperties($value, $schema = null, $path = null, $i = "")
     {
         $schema = unserialize(\''.serialize($schema).'\');
@@ -378,6 +475,6 @@ class '.$classes[$schemaId]['Undefined'].' extends Undefined
 }
         ';
 
-        return array('code' => $code, 'classes' => $classes);
+        return array('code' => $prependCode.$code, 'classes' => $classes);
     }
 }
