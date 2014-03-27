@@ -112,4 +112,80 @@ class Type extends Constraint
 
         throw new InvalidArgumentException((is_object($value) ? 'object' : $value) . ' is an invalid type for ' . $type);
     }
+
+    public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
+    {
+        $classes[$schemaId]['Type'] = uniqid('Type');
+
+        $prependCode = '';
+        $code = '
+trait Trait'.$classes[$schemaId]['Type'].'
+{
+    public function check($value = null, $schema = null, $path = null, $i = null)
+    {';
+        $type = isset($schema->type) ? $schema->type : null;
+        $code .= '
+        $isValid = true;';
+
+        if (is_array($type)) {
+            $code .= '
+            // @TODO refactor
+            $validatedOneType = false;
+            $errors = array();';
+            foreach ($type as $tp) {
+                $subSchema = new \stdClass();
+                $subSchema->type = $tp;
+
+                $id = md5(serialize($subSchema));
+                $compiled = Constraint::compile($id, $subSchema, $checkMode, $uriRetriever, $classes);
+                $prependCode .= $compiled['code'];
+                $classes = $compiled['classes'];
+                $code .= '
+                if (!$validatedOneType) {
+                    $validator = new '.$classes[$id]['Type'].'();
+                    $validator->check($value, null, $path, null);
+
+                    $error = $validator->getErrors();
+
+                    if (!count($error)) {
+                        $validatedOneType = true;
+                    }
+
+                    $errors = $error;
+                }';
+            }
+
+            $code .= '
+            if (!$validatedOneType) {
+                return $this->addErrors($errors);
+            }';
+        } elseif (is_object($type)) {
+            $id = md5(serialize($type));
+            $compiled = Constraint::compile($id, $type, $checkMode, $uriRetriever, $classes);
+            $prependCode .= $compiled['code'];
+            $classes = $compiled['classes'];
+            $code .= '
+                $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path);
+            ';
+        } else {
+            $code .= '
+            $isValid = $this->validateType($value, '.var_export($type, true).');';
+        }
+
+        $code .= '
+        if ($isValid === false) {
+            $this->addError($path, gettype($value) . " value found, but a " . '.var_export($type, true).' . " is required");
+        }
+    }
+}
+
+class '.$classes[$schemaId]['Type'].' extends Type
+{
+    use Trait'.$classes[$schemaId]['Constraint'].';
+    use Trait'.$classes[$schemaId]['Type'].';
+}
+        ';
+
+        return array('code' => $prependCode.$code, 'classes' => $classes);
+    }
 }

@@ -297,8 +297,13 @@ class Undefined extends Constraint
 
     protected function validateUri($schema, $schemaUri = null)
     {
+        return static::staticValidateUri($this->getUriRetriever(), $schema, $schemaUri);
+    }
+
+    public static function staticValidateUri($uriRetriever, $schema, $schemaUri = null)
+    {
         $resolver = new UriResolver();
-        $retriever = $this->getUriRetriever();
+        $retriever = $uriRetriever;
 
         $jsonSchema = null;
         if ($resolver->isValid($schemaUri)) {
@@ -462,10 +467,159 @@ trait Trait'.$classes[$schemaId]['Undefined'].'
     }
 
     protected function validateCommonProperties($value, $schema = null, $path = null, $i = "")
-    {
-        $schema = unserialize(\''.serialize($schema).'\');
-        parent::validateCommonProperties($value, $schema, $path, $i);
+    {';
+        if (isset($schema->extends)) {
+            if (is_string($schema->extends)) {
+                $schema->extends = static::staticValidateUri($schema, $schema->extends);
+            }
+            if (is_array($schema->extends)) {
+                foreach ($schema->extends as $extends) {
+                    $id = md5(serialize($extends));
+                    $compiled = Constraint::compile($id, $extends, $checkMode, $uriRetriever, $classes);
+                    $prependCode .= $compiled['code'];
+                    $classes = $compiled['classes'];
+                    $code .= '
+                        $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);
+                    ';
+                }
+            } else {
+                $id = md5(serialize($schema->extends));
+                $compiled = Constraint::compile($id, $schema->extends, $checkMode, $uriRetriever, $classes);
+                $prependCode .= $compiled['code'];
+                $classes = $compiled['classes'];
+                $code .= '
+                    $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);
+                ';
+            }
+        }
+
+        $code .= '
+        if (is_object($value)) {';
+            if (isset($schema->required) && is_array($schema->required) ) {
+                // Draft 4 - Required is an array of strings - e.g. "required": ["foo", ...]
+                foreach ($schema->required as $required) {
+                    $code .= '
+                    if (!property_exists($value, '.var_export($required, true).')) {
+                        $this->addError($path, "the property " . '.var_export($required, true).' . " is required");
+                    }';
+                }
+            } else if (isset($schema->required)) {
+                // Draft 3 - Required attribute - e.g. "foo": {"type": "string", "required": true}
+                if ($schema->required) {
+                    $code .= '
+                    if ($value instanceof Undefined) {
+                        $this->addError($path, "is missing and it is required");
+                    }';
+                }
+            }
+            $code .= '
+        }
+
+        if (!($value instanceof Undefined)) {
+            $this->checkType($value, null, $path);
+        }';
+
+        if (isset($schema->disallow)) {
+            $code .= '
+            $initErrors = $this->getErrors();';
+
+            $typeSchema = new \stdClass();
+            $typeSchema->type = $schema->disallow;
+
+            $id = md5(serialize($typeSchema));
+            $compiled = Constraint::compile($id, $typeSchema, $checkMode, $uriRetriever, $classes);
+            $prependCode .= $compiled['code'];
+            $classes = $compiled['classes'];
+            $code .= '
+            $this->checkValidator(new '.$classes[$id]['Type'].'(), $value, null, $path, $i);
+
+            // if no new errors were raised it must be a disallowed value
+            if (count($this->getErrors()) == count($initErrors)) {
+                $this->addError($path, "disallowed value was matched");
+            } else {
+                $this->errors = $initErrors;
+            }';
+        }
+
+        if (isset($schema->not)) {
+            $code .= '
+            $initErrors = $this->getErrors();';
+            $id = md5(serialize($schema->not));
+            $compiled = Constraint::compile($id, $schema->not, $checkMode, $uriRetriever, $classes);
+            $prependCode .= $compiled['code'];
+            $classes = $compiled['classes'];
+            $code .= '
+            $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);
+
+            // if no new errors were raised then the instance validated against the "not" schema
+            if (count($this->getErrors()) == count($initErrors)) {
+                $this->addError($path, "matched a schema which it should not");
+            } else {
+                $this->errors = $initErrors;
+            }';
+        }
+
+        if (isset($schema->minProperties)) {
+            $code .= '
+            if (is_object($value)) {
+                if (count(get_object_vars($value)) < '.var_export($schema->minProperties, true).') {
+                    $this->addError($path, "must contain a minimum of " . '.var_export($schema->minProperties, true).' . " properties");
+                }
+            }';
+        }
+        if (isset($schema->maxProperties)) {
+            $code .= '
+            if (is_object($value)) {
+                if (count(get_object_vars($value)) > '.var_export($schema->maxProperties, true).') {
+                    $this->addError($path, "must contain no more than " . '.var_export($schema->maxProperties, true).' . " properties");
+                }
+            }';
+        }
+
+        if (isset($schema->dependencies)) {
+            $code .= '
+            if (is_object($value)) {
+                $this->validateDependencies($value, null, $path);
+            }';
+        }
+
+        $code .= '
+    }';
+
+    if (isset($schema->dependencies)) {
+        $code .= '
+    protected function validateDependencies($value, $dependencies, $path, $i = "")
+    {';
+        foreach ($schema->dependencies as $key => $dependency) {
+            $code .= '
+            if (property_exists($value, '.var_export($key, true).')) {';
+                if (is_string($dependency)) {
+                    $code .= '
+                    if (!property_exists($value, '.var_export($dependency, true).')) {
+                        $this->addError($path, "'.var_export($key, true).' depends on '.var_export($dependency, true).' and '.var_export($dependency, true).' is missing");
+                    }';
+                } else if (is_array($dependency)) {
+                    foreach ($dependency as $d) {
+                        $code .= '
+                        if (!property_exists($value, '.var_export($d, true).')) {
+                            $this->addError($path, "'.var_export($key, true).' depends on '.var_export($d, true).' and '.var_export($d, true).' is missing");
+                        }';
+                    }
+                } else if (is_object($dependency)) {
+                    $id = md5(serialize($dependency));
+                    $compiled = Constraint::compile($id, $dependency, $checkMode, $uriRetriever, $classes);
+                    $prependCode .= $compiled['code'];
+                    $classes = $compiled['classes'];
+                    $code .= '
+                    $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);';
+                }
+                $code .= '
+            }';
+        }
+        $code .= '
+    }';
     }
+    $code .= '
 }
 
 class '.$classes[$schemaId]['Undefined'].' extends Undefined
