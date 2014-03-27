@@ -358,7 +358,7 @@ trait Trait'.$classes[$schemaId]['Undefined'].'
         }
 
         $code .= '
-        parent::validateTypes($value, $path, $i);';
+        parent::validateTypes($value, null, $path, $i);';
         if (isset($schema->enum)) {
             $code .= '$this->checkEnum($value, null, $path, $i);';
         }
