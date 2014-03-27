@@ -267,8 +267,10 @@ abstract class Constraint implements ConstraintInterface
         $code .= $compiled['code'];
 
         $compiled = Type::compile($schemaId, $schema, $checkMode, $uriRetriever, $classes);
-        $classes = $compiled['classes'];
-        $code .= $compiled['code'];
+        if ($compiled) {
+            $classes = $compiled['classes'];
+            $code .= $compiled['code'];
+        }
 
         $compiled = String::compile($schemaId, $schema, $checkMode, $uriRetriever, $classes);
         if ($compiled) {
@@ -310,9 +312,13 @@ trait Trait'.$classes[$schemaId]['Constraint'].'
     }
 
     protected function checkType($value, $schema = null, $path = null, $i = null)
-    {
-        $type = new '.$classes[$schemaId]['Type'].'();
-        $this->checkValidator($type, $value, $schema, $path, $i);
+    {';
+        if (isset($classes[$schemaId]['Type'])) {
+            $code .= '
+            $type = new '.$classes[$schemaId]['Type'].'();
+            $this->checkValidator($type, $value, $schema, $path, $i);';
+        }
+        $code .= '
     }
 
     protected function checkString($value, $schema = null, $path = null, $i = null)
@@ -355,13 +361,7 @@ trait Trait'.$classes[$schemaId]['Constraint'].'
         }
         $code .= '
     }
-}
-
-abstract class '.$classes[$schemaId]['Constraint'].' extends Constraint
-{
-    use Trait'.$classes[$schemaId]['Constraint'].';
-}
-        ';
+}';
 
         return array('code' => $code, 'classes' => $classes);
     }

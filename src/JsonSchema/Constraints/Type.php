@@ -125,6 +125,11 @@ class '.$classes[$schemaId]['Type'].' extends Type
     public function check($value = null, $schema = null, $path = null, $i = null)
     {';
         $type = isset($schema->type) ? $schema->type : null;
+
+        if (!$type) {
+            return null;
+        }
+
         $code .= '
         $isValid = true;';
 
