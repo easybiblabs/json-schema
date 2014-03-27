@@ -129,6 +129,11 @@ class Object extends Constraint
      */
     protected function getProperty($element, $property, $fallback = null)
     {
+        return static::staticGetProperty($element, $property, $fallback);
+    }
+
+    static protected function staticGetProperty($element, $property, $fallback = null)
+    {
         if (is_array($element) /*$this->checkMode == self::CHECK_MODE_TYPE_CAST*/) {
             return array_key_exists($property, $element) ? $element[$property] : $fallback;
         } elseif (is_object($element)) {
@@ -136,5 +141,166 @@ class Object extends Constraint
         }
 
         return $fallback;
+    }
+
+    public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
+    {
+        $classes[$schemaId]['Object'] = uniqid('Object');
+
+        $objectDefinition = isset($schema->properties) ? $schema->properties : null;
+        $additionalProperties = isset($schema->additionalProperties) ? $schema->additionalProperties : null;
+        $patternProperties = isset($schema->patternProperties) ? $schema->patternProperties : null;
+
+        $prependCode = '';
+        $code = '
+trait Trait'.$classes[$schemaId]['Object'].'
+{
+    function check($element, $definition = null, $path = null, $additionalProp = null, $patternProperties = null)
+    {
+        if ($element instanceof Undefined) {
+            return;
+        }
+
+        $matches = array();';
+        if ($patternProperties) {
+            $code .= '
+            $matches = $this->validatePatternProperties($element, $path, null);';
+        }
+
+        if ($objectDefinition) {
+            $code .= '
+            // validate the definition properties
+            $this->validateDefinition($element, null, $path);';
+        }
+
+        $code .= '
+        // additional the element properties
+        $this->validateElement($element, $matches, null, $path, null);
+    }';
+
+    if ($patternProperties) {
+        $code .= '
+    public function validatePatternProperties($element, $path, $patternProperties)
+    {
+        $matches = array();';
+        foreach ($patternProperties as $pregex => $schema) {
+            // Validate the pattern before using it to test for matches
+            if (@preg_match('/'. $pregex . '/', '') === false) {
+                $code .= '
+                $this->addError($path, "The pattern \"' . $pregex . '\" is invalid");';
+                continue;
+            }
+            $code .= '
+            foreach ($element as $i => $value) {
+                if (preg_match("/" . '.var_export($pregex, true).' . "/", $i)) {
+                    $matches[] = $i;';
+                    $id = md5(serialize($schema ?: new \stdClass));
+                    $compiled = Constraint::compile($id, $schema ?: new \stdClass, $checkMode, $uriRetriever, $classes);
+                    $prependCode .= $compiled['code'];
+                    $classes = $compiled['classes'];
+                    $code .= '
+                    $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);
+                }
+            }';
+        }
+        $code .= '
+        return $matches;
+    }';
+    }
+
+    if ($objectDefinition) {
+        $code .= '
+    public function validateDefinition($element, $objectDefinition = null, $path = null)
+    {';
+        foreach ($objectDefinition as $i => $value) {
+            $code .= '
+            $property = $this->getProperty($element, '.var_export($i, true).', new Undefined());';
+            $definition = static::staticGetProperty($objectDefinition, $i);
+            $id = md5(serialize($definition));
+            $compiled = Constraint::compile($id, $definition, $checkMode, $uriRetriever, $classes);
+            $prependCode .= $compiled['code'];
+            $classes = $compiled['classes'];
+            $code .= '
+            $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $property, null, $path, '.var_export($i, true).');';
+        }
+        $code .= '
+    }';
+    }
+
+    $code .= '
+    public function validateElement($element, $matches, $objectDefinition = null, $path = null, $additionalProp = null)
+    {
+        foreach ($element as $i => $value) {
+
+            $property = $this->getProperty($element, $i, new Undefined());
+            switch ($i) {';
+        if ($objectDefinition) {
+            foreach ($objectDefinition as $key => $definition) {
+                if ($definition) {
+                    $code .= 'case '.var_export($key, true).':
+                        $hasDefinition = true;
+                        $require = '.var_export(static::staticGetProperty($definition, 'requires'), true).';
+                        break;
+                    ';
+                }
+            }
+        }
+        $code .= '
+            default:
+                $hasDefinition = false;
+                $require = null;
+        }';
+
+        if ($additionalProperties === false) {
+            $code .= '
+            if (!in_array($i, $matches) && $this->inlineSchemaProperty !== $i && !$hasDefinition) {
+                $this->addError($path, "The property " . $i . " is not defined and the definition does not allow additional properties");
+            }';
+        }
+
+        if ($additionalProperties) {
+            $code .= '
+            if (!in_array($i, $matches) && !$hasDefinition) {';
+                if ($additionalProperties === true) {
+                    //this does not actually do anything
+                    //$this->checkUndefined($value, null, $path, $i);
+                } else {
+                    $id = md5(serialize($additionalProperties));
+                    $compiled = Constraint::compile($id, $additionalProperties, $checkMode, $uriRetriever, $classes);
+                    $prependCode .= $compiled['code'];
+                    $classes = $compiled['classes'];
+                    $code .= '
+                    $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);';
+                }
+                $code .= '
+            }';
+        }
+
+        $code .= '
+            // property requires presence of another
+            if ($require && !$this->getProperty($element, $require)) {
+                $this->addError($path, "the presence of the property " . $i . " requires that " . $require . " also be present");
+            }
+
+            if (!$hasDefinition) {';
+                $id = md5(serialize(new \stdClass));
+                $compiled = Constraint::compile($id, new \stdClass, $checkMode, $uriRetriever, $classes);
+                $prependCode .= $compiled['code'];
+                $classes = $compiled['classes'];
+                $code .= '
+                $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);
+            }
+        }
+    }
+}
+
+class '.$classes[$schemaId]['Object'].' extends Object
+{
+    use Trait'.$classes[$schemaId]['Constraint'].';
+    use Trait'.$classes[$schemaId]['Object'].';
+}
+        ';
+
+        return array('code' => $prependCode.$code, 'classes' => $classes);
     }
 }

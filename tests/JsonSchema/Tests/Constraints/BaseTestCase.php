@@ -29,6 +29,29 @@ abstract class BaseTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider getInvalidTests
+     */
+    public function testInvalidCasesCompiled($input, $schema, $checkMode = Validator::CHECK_MODE_NORMAL, $errors = array())
+    {
+        $schema = json_decode($schema);
+        if (null === $schema) {
+            $this->setExpectedException('InvalidArgumentException');
+        }
+
+        $compiled = Validator::compile(null, $schema, $checkMode);
+        file_put_contents('tmp.php', $compiled['code']);
+        include('tmp.php');
+        $validator = new $compiled['validator']();
+
+        $validator->check(json_decode($input));
+
+        if (array() !== $errors) {
+            $this->assertEquals($errors, $validator->getErrors(), print_r($validator->getErrors(),true));
+        }
+        $this->assertFalse($validator->isValid(), print_r($validator->getErrors(), true));
+    }
+
+    /**
      * @dataProvider getValidTests
      */
     public function testValidCases($input, $schema, $checkMode = Validator::CHECK_MODE_NORMAL)
@@ -43,7 +66,12 @@ abstract class BaseTestCase extends \PHPUnit_Framework_TestCase
      */
     public function testValidCasesCompiled($input, $schema, $checkMode = Validator::CHECK_MODE_NORMAL)
     {
-        $compiled = Validator::compile(null, json_decode($schema), $checkMode);
+        $schema = json_decode($schema);
+        if (null === $schema) {
+            $this->setExpectedException('InvalidArgumentException');
+        }
+
+        $compiled = Validator::compile(null, $schema, $checkMode);
         file_put_contents('tmp.php', $compiled['code']);
         include('tmp.php');
         $validator = new $compiled['validator']();

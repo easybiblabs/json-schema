@@ -175,7 +175,7 @@ abstract class Constraint implements ConstraintInterface
      * @param mixed $path
      * @param mixed $i
      */
-    protected function checkUndefined($value, $schema = null, $path = null, $i = null)
+    public function checkUndefined($value, $schema = null, $path = null, $i = null)
     {
         $this->checkValidator(new Undefined($this->checkMode, $this->uriRetriever), $value, $schema, $path, $i);
     }
@@ -247,16 +247,48 @@ abstract class Constraint implements ConstraintInterface
 
     public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
     {
+        if (isset($classes[$schemaId]['Constraint'])) {
+            return array('code' => '', 'classes' => $classes);
+        }
+
         $classes[$schemaId]['Constraint'] = uniqid('Constraint');
         $code = '';
+
+        $compiled = Undefined::compile($schemaId, $schema, $checkMode, $uriRetriever, $classes);
+        $classes = $compiled['classes'];
+        $code .= $compiled['code'];
 
         $compiled = Collection::compile($schemaId, $schema, $checkMode, $uriRetriever, $classes);
         $classes = $compiled['classes'];
         $code .= $compiled['code'];
 
-        $compiled = Undefined::compile($schemaId, $schema, $checkMode, $uriRetriever, $classes);
+        $compiled = Object::compile($schemaId, $schema, $checkMode, $uriRetriever, $classes);
         $classes = $compiled['classes'];
         $code .= $compiled['code'];
+
+        $compiled = String::compile($schemaId, $schema, $checkMode, $uriRetriever, $classes);
+        if ($compiled) {
+            $classes = $compiled['classes'];
+            $code .= $compiled['code'];
+        }
+
+        $compiled = Number::compile($schemaId, $schema, $checkMode, $uriRetriever, $classes);
+        if ($compiled) {
+            $classes = $compiled['classes'];
+            $code .= $compiled['code'];
+        }
+
+        if (isset($schema->enum)) {
+            $compiled = Enum::compile($schemaId, $schema, $checkMode, $uriRetriever, $classes);
+            $classes = $compiled['classes'];
+            $code .= $compiled['code'];
+        }
+
+        if (isset($schema->format)) {
+            $compiled = Format::compile($schemaId, $schema, $checkMode, $uriRetriever, $classes);
+            $classes = $compiled['classes'];
+            $code .= $compiled['code'];
+        }
 
         $code .= '
 trait Trait'.$classes[$schemaId]['Constraint'].'
@@ -265,6 +297,53 @@ trait Trait'.$classes[$schemaId]['Constraint'].'
     {
         $collection = new '.$classes[$schemaId]['Collection'].'();
         $this->checkValidator($collection, $value, $schema, $path, $i);
+    }
+
+    protected function checkObject($value, $schema = null, $path = null, $i = null, $patternProperties = null)
+    {
+        $object = new '.$classes[$schemaId]['Object'].'();
+        $this->checkValidator($object, $value, $schema, $path, $i, $patternProperties);
+    }
+
+    protected function checkString($value, $schema = null, $path = null, $i = null)
+    {';
+        if (isset($classes[$schemaId]['String'])) {
+            $code .= '
+            $string = new '.$classes[$schemaId]['String'].'();
+            $this->checkValidator($string, $value, $schema, $path, $i);';
+        }
+        $code .= '
+    }
+
+    protected function checkNumber($value, $schema = null, $path = null, $i = null)
+    {';
+        if (isset($classes[$schemaId]['Number'])) {
+            $code .= '
+            $number = new '.$classes[$schemaId]['Number'].'();
+            $this->checkValidator($number, $value, $schema, $path, $i);
+            ';
+        }
+        $code .= '
+    }
+
+    protected function checkEnum($value, $schema = null, $path = null, $i = null)
+    {';
+        if (isset($schema->enum)) {
+            $code .= '
+            $enum = new '.$classes[$schemaId]['Enum'].'();
+            $this->checkValidator($enum, $value, $schema, $path, $i);';
+        }
+        $code .= '
+    }
+
+    protected function checkFormat($value, $schema = null, $path = null, $i = null)
+    {';
+        if (isset($schema->format)) {
+            $code .= '
+            $format = new '.$classes[$schemaId]['Format'].'();
+            $this->checkValidator($format, $value, $schema, $path, $i);';
+        }
+        $code .= '
     }
 }
 

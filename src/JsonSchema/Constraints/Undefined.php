@@ -325,7 +325,7 @@ trait Trait'.$classes[$schemaId]['Undefined'].'
 
         if (!is_object($schema)) {
             $code .= '
-            throw new InvalidArgumentException(
+            throw new \JsonSchema\Exception\InvalidArgumentException(
                 "Given schema must be an object in " . $path
                 . " but is a '.gettype($schema).'"
             );
@@ -336,9 +336,25 @@ trait Trait'.$classes[$schemaId]['Undefined'].'
     }
     public function validateTypes($value, $schema = null, $path = null, $i = null)
     {
+        ';
+        if (isset($schema->properties) || isset($schema->patternProperties)) {
+            $code .= '
+            if (is_object($value)) {
+                $this->checkObject(
+                    $value,
+                    null,
+                    $path,
+                    null,
+                    null
+                );
+            }';
+        }
+
+        $code .= '
         $schema = unserialize(\''.serialize($schema).'\');
         parent::validateTypes($value, $schema, $path, $i);
     }
+
     protected function validateOfProperties($value, $schema, $path, $i = "")
     {
         $schema = unserialize(\''.serialize($schema).'\');

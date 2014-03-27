@@ -39,4 +39,58 @@ class String extends Constraint
 
         $this->checkFormat($element, $schema, $path, $i);
     }
+
+    public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
+    {
+        $classes[$schemaId]['String'] = uniqid('String');
+
+        $null = true;
+
+        $code = '
+trait Trait'.$classes[$schemaId]['String'].'
+{
+    public function check($element, $schema = null, $path = null, $i = null)
+    {
+        ';
+        if (isset($schema->maxLength)) {
+            $max = var_export($schema->maxLength, true);
+            $code .= '
+            if (strlen($element) > '.$max.') {
+                $this->addError($path, "must be at most '.$max.' characters long");
+            }
+            ';
+            $null = false;
+        }
+        if (isset($schema->minLength)) {
+            $min = var_export($schema->minLength, true);
+            $code .= '
+            if (strlen($element) < '.$min.') {
+                $this->addError($path, "must be at least '.$min.' characters long");
+            }
+            ';
+            $null = false;
+        }
+        if (isset($schema->pattern)) {
+            $code .= '
+            if (!preg_match("#" . str_replace("#", "\\\\#", '.var_export($schema->pattern, true).') . "#", $element)) {
+                $this->addError($path, "does not match the regex pattern " . '.var_export($schema->pattern, true).');
+            }
+            ';
+            $null = false;
+        }
+        $null = $null || isset($schema->format);
+        $code .= '
+        $this->checkFormat($element, null, $path, $i);
+    }
+}
+
+class '.$classes[$schemaId]['String'].' extends String
+{
+    use Trait'.$classes[$schemaId]['Constraint'].';
+    use Trait'.$classes[$schemaId]['String'].';
+}
+        ';
+
+        return $null ? null : array('code' => $code, 'classes' => $classes);
+    }
 }

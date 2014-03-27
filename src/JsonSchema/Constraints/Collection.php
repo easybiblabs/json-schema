@@ -28,18 +28,16 @@ class Collection extends Constraint
             $i,
             isset($schema->minItems) ? $schema->minItems : null,
             isset($schema->maxItems) ? $schema->maxItems : null,
-            isset($schema->uniqueItems),
-            isset($schema->items)
+            isset($schema->uniqueItems)
         );
 
-        $items = isset($schema->items);
         // Verify items
-        if ($items) {
+        if (isset($schema->items)) {
             $this->validateItems($value, $schema, $path, $i);
         }
     }
 
-    public function checkNoSchema($value, $path = null, $i = null, $minItems = null, $maxItems = null, $uniqueItems = false, $items = false)
+    public function checkNoSchema($value, $path = null, $i = null, $minItems = null, $maxItems = null, $uniqueItems = false)
     {
         // Verify minItems
         if (null != $minItems && count($value) < $minItems) {
@@ -128,6 +126,7 @@ class Collection extends Constraint
     {
         $classes[$schemaId]['Collection'] = uniqid('Collection');
 
+        $prependCode = '';
         $code = '
 trait Trait'.$classes[$schemaId]['Collection'].'
 {
@@ -142,12 +141,141 @@ trait Trait'.$classes[$schemaId]['Collection'].'
             '.var_export(isset($schema->uniqueItems), true).',
             '.var_export(isset($schema->items), true).'
         );
-
-        $items = isset($schema->items);
-        // Verify items
-        if ($items) {
-            $this->validateItems($value, $schema, $path, $i);
+        ';
+        if (isset($schema->items)) {
+            $code .= '
+                $this->validateItems($value, null, $path, $i);
+            ';
         }
+        $code .= '
+    }
+
+    protected function validateItems($value, $schema = null, $path = null, $i = null)
+    {
+        ';
+        if (isset($schema->items)) {
+            if (is_object($schema->items)) {
+                $code .= '
+            // just one type definition for the whole array
+            foreach ($value as $k => $v) {
+                $initErrors = $this->getErrors();
+
+                // First check if its defined in "items"
+                ';
+                $id = md5(serialize($schema->items));
+                $compiled = Constraint::compile($id, $schema->items, $checkMode, $uriRetriever, $classes);
+                $prependCode .= $compiled['code'];
+                $classes = $compiled['classes'];
+                $code .= '
+                    $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $v, null, $path, $k);
+                ';
+
+                if (isset($schema->additionalItems) && $schema->additionalItems !== false)
+                {
+                    $code .= '
+                    // Recheck with "additionalItems" if the first test fails
+                    if (count($initErrors) < count($this->getErrors())) {
+                        $secondErrors = $this->getErrors();
+                        ';
+                        $id = md5(serialize($schema->additionalItems));
+                        $compiled = Constraint::compile($id, $schema->additionalItems, $checkMode, $uriRetriever, $classes);
+                        $prependCode .= $compiled['code'];
+                        $classes = $compiled['classes'];
+                        $code .= '
+                            $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $v, null, $path, $k);
+                        ';
+
+                        $code .= '
+                    }';
+                }
+
+                $code .= '
+
+                // Reset errors if needed
+                if (isset($secondErrors) && count($secondErrors) < count($this->getErrors())) {
+                    $this->errors = $secondErrors;
+                } else if (isset($secondErrors) && count($secondErrors) === count($this->getErrors())) {
+                    $this->errors = $initErrors;
+                }
+            }
+            ';
+        } else {
+
+            $itemsCode = array();
+            foreach ($schema->items as $k => $subSchema) {
+                $id = md5(serialize($subSchema));
+                $compiled = Constraint::compile($id, $subSchema, $checkMode, $uriRetriever, $classes);
+                $prependCode .= $compiled['code'];
+                $classes = $compiled['classes'];
+                $itemsCode[$k] = '
+                    $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $v, null, $path, $k);
+                ';
+            }
+
+            $code .= '
+            // Defined item type definitions
+            foreach ($value as $k => $v) {
+                switch ($k) {
+                    ';
+                    foreach ($itemsCode as $k => $itemCode) {
+                        $code .= 'case '.var_export($k, true).':
+                            '.$itemCode.'
+                            break;
+                        ';
+                    }
+                    $code .= '
+                    default:
+                    // Additional items
+                    ';
+                    if (property_exists($schema, 'additionalItems')) {
+                        if ($schema->additionalItems !== false) {
+                            $id = md5(serialize($schema->additionalItems));
+                            $compiled = Constraint::compile($id, $schema->additionalItems, $checkMode, $uriRetriever, $classes);
+                            $prependCode .= $compiled['code'];
+                            $classes = $compiled['classes'];
+                            $code .= '
+                                $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $v, null, $path, $k);
+                            ';
+                        } else {
+                            $code .= '
+                            $this->addError(
+                                $path, "The item " . $i . "[" . $k . "] is not defined and the definition does not allow additional items");
+                            ';
+                        }
+                    } else {
+                        $id = md5(serialize(new \stdClass()));
+                        $compiled = Constraint::compile($id, new \stdClass(), $checkMode, $uriRetriever, $classes);
+                        $prependCode .= $compiled['code'];
+                        $classes = $compiled['classes'];
+                        $code .= '
+                            $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $v, null, $path, $k);
+                        ';
+                    }
+                    $code .= '
+                    break;
+                }
+            }
+
+            // Treat when we have more schema definitions than values, not for empty arrays
+            if(count($value) > 0) {
+                for ($k = count($value); $k < '.var_export(count($schema->items), true).'; $k++) {
+                    switch ($k) {
+                        ';
+                    foreach ($itemsCode as $k => $itemCode) {
+                        $code .= 'case '.var_export($k, true).':
+                            $v = new Undefined();
+                            '.$itemCode.'
+                            break;
+                        ';
+                    }
+                    $code .= '
+                    }
+                }
+            }
+            ';
+            }
+        }
+        $code .= '
     }
 }
 
@@ -158,6 +286,6 @@ class '.$classes[$schemaId]['Collection'].' extends Collection
 }
         ';
 
-        return array('code' => $code, 'classes' => $classes);
+        return array('code' => $prependCode.$code, 'classes' => $classes);
     }
 }

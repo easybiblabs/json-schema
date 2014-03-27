@@ -26,7 +26,12 @@ class Format extends Constraint
             return;
         }
 
-        switch ($schema->format) {
+        $this->checkNoSchema($element, $path, $i, $schema->format);
+    }
+
+    public function checkNoSchema($element, $path = null, $i = null, $format = null)
+    {
+        switch ($format) {
             case 'date':
                 if (!$date = $this->validateDateTime($element, 'Y-m-d')) {
                     $this->addError($path, sprintf('Invalid date %s, expected format YYYY-MM-DD', json_encode($element)));
@@ -112,7 +117,7 @@ class Format extends Constraint
                 break;
 
             default:
-                $this->addError($path, "Unknown format: " . json_encode($schema->format));
+                $this->addError($path, "Unknown format: " . json_encode($format));
                 break;
         }
     }
@@ -160,5 +165,34 @@ class Format extends Constraint
     protected function validateHostname($host)
     {
         return preg_match('/^[_a-z]+\.([_a-z]+\.?)+$/i', $host);
+    }
+
+    public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
+    {
+        $classes[$schemaId]['Format'] = uniqid('Format');
+
+        $code = '
+trait Trait'.$classes[$schemaId]['Format'].'
+{
+    public function check($element, $schema = null, $path = null, $i = null)
+    {
+        ';
+        if (!isset($schema->format)) {
+            $code .= 'return;';
+        } else {
+            $code .= '$this->checkNoSchema($element, $path, $i, '.var_export($schema->format, true).');';
+        }
+        $code .= '
+    }
+}
+
+class '.$classes[$schemaId]['Format'].' extends Format
+{
+    use Trait'.$classes[$schemaId]['Constraint'].';
+    use Trait'.$classes[$schemaId]['Format'].';
+}
+        ';
+
+        return array('code' => $code, 'classes' => $classes);
     }
 }

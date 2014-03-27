@@ -65,7 +65,7 @@ class Number extends Constraint
         $this->checkFormat($element, $schema, $path, $i);
     }
 
-    private function fmod($number1, $number2)
+    protected function fmod($number1, $number2)
     {
         $modulus = fmod($number1, $number2);
         $precision = abs(0.0000000001);
@@ -79,5 +79,100 @@ class Number extends Constraint
         $decimals2 = mb_strpos($number2, ".") ? mb_strlen($number2) - mb_strpos($number2, ".") - 1 : 0;
 
         return (float)round($modulus, max($decimals1, $decimals2));
+    }
+
+    public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
+    {
+        $classes[$schemaId]['Number'] = uniqid('Number');
+
+        $null = true;
+
+        $code = '
+trait Trait'.$classes[$schemaId]['Number'].'
+{
+    public function check($element, $schema = null, $path = null, $i = null)
+    {
+        ';
+        if (isset($schema->exclusiveMinimum)) {
+            if (isset($schema->minimum)) {
+                if ($schema->exclusiveMinimum) {
+                    $code .= '
+                    if ($element === '.var_export($schema->minimum, true).') {
+                        $this->addError($path, "must have a minimum value greater than boundary value of " . '.var_export($schema->minimum, true).');
+                    }';
+                }
+                $code .= '
+                if ($element < '.var_export($schema->minimum, true).') {
+                    $this->addError($path, "must have a minimum value of " . '.var_export($schema->minimum, true).');
+                }';
+            } else {
+                $code .= '
+                   $this->addError($path, "use of exclusiveMinimum requires presence of minimum");
+                ';
+            }
+            $null = false;
+        } else if (isset($schema->minimum)) {
+            $code .= '
+            if ($element < '.var_export($schema->minimum, true).') {
+                $this->addError($path, "must have a minimum value of " . '.var_export($schema->minimum, true).');
+            }';
+            $null = false;
+        }
+
+        if (isset($schema->exclusiveMaximum)) {
+            if (isset($schema->maximum)) {
+                if ($schema->exclusiveMaximum) {
+                    $code .= 'if ($element === '.var_export($schema->maximum, true).') {
+                        $this->addError($path, "must have a maximum value less than boundary value of " . '.var_export($schema->maximum, true).');
+                    }';
+                }
+                $code .= 'if ($element > '.var_export($schema->maximum, true).') {
+                    $this->addError($path, "must have a maximum value of " . '.var_export($schema->maximum, true).');
+                }';
+            } else {
+                $code .= '
+                    $this->addError($path, "use of exclusiveMaximum requires presence of maximum");
+                ';
+            }
+            $null = false;
+        } else if (isset($schema->maximum)) {
+            $code .= '
+            if ($element > '.var_export($schema->maximum, true).') {
+                $this->addError($path, "must have a maximum value of " . '.var_export($schema->maximum, true).');
+            }';
+            $null = false;
+        }
+
+        if (isset($schema->divisibleBy)) {
+            $code .= '
+            if ($this->fmod($element, '.var_export($schema->divisibleBy, true).') != 0) {
+                $this->addError($path, "is not divisible by " . '.var_export($schema->divisibleBy, true).');
+            }';
+            $null = false;
+        }
+
+        if (isset($schema->multipleOf)) {
+            $code .= '
+            if ($this->fmod($element, '.var_export($schema->multipleOf, true).') != 0) {
+                $this->addError($path, "must be a multiple of " . '.var_export($schema->multipleOf, true).');
+            }';
+            $null = false;
+        }
+
+        $null = $null || isset($schema->format);
+
+        $code .= '
+        $this->checkFormat($element, null, $path, $i);
+    }
+}
+
+class '.$classes[$schemaId]['Number'].' extends Number
+{
+    use Trait'.$classes[$schemaId]['Constraint'].';
+    use Trait'.$classes[$schemaId]['Number'].';
+}
+        ';
+
+        return $null ? null : array('code' => $code, 'classes' => $classes);
     }
 }

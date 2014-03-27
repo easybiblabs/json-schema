@@ -44,6 +44,10 @@ class Validator extends Constraint
 
     public static function compile($void, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
     {
+        if (null === $schema) {
+            throw new \InvalidArgumentException("Cannot compile null schema: inline schema is not supported in compiled validators.");
+        }
+
         $schemaId = md5(serialize($schema));
 
         $compiled = Schema::compile($schemaId, $schema, $checkMode, $uriRetriever, $classes);
