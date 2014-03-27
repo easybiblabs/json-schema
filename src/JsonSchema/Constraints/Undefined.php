@@ -334,6 +334,7 @@ trait Trait'.$classes[$schemaId]['Undefined'].'
         $code .= '
         parent::checkAnySchema($value, null, $path, $i);
     }
+
     public function validateTypes($value, $schema = null, $path = null, $i = null)
     {
         ';
@@ -351,8 +352,11 @@ trait Trait'.$classes[$schemaId]['Undefined'].'
         }
 
         $code .= '
-        $schema = unserialize(\''.serialize($schema).'\');
-        parent::validateTypes($value, $schema, $path, $i);
+        parent::validateTypes($value, $path, $i);';
+        if (isset($schema->enum)) {
+            $code .= '$this->checkEnum($value, null, $path, $i);';
+        }
+        $code .= '
     }
 
     protected function validateOfProperties($value, $schema, $path, $i = "")

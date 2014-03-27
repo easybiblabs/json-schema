@@ -159,7 +159,7 @@ trait Trait'.$classes[$schemaId]['Number'].'
             $null = false;
         }
 
-        $null = $null || isset($schema->format);
+        $null = $null && !isset($schema->format);
 
         $code .= '
         $this->checkFormat($element, null, $path, $i);

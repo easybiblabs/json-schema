@@ -47,7 +47,7 @@ abstract class BaseTestCase extends \PHPUnit_Framework_TestCase
 
         if (array() !== $errors) {
             $this->assertEquals($errors, $validator->getErrors(), print_r($validator->getErrors(),true));
-        }
+        }//print_r($validator->getErrors());
         $this->assertFalse($validator->isValid(), print_r($validator->getErrors(), true));
     }
 
