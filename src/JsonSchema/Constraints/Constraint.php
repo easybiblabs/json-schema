@@ -259,8 +259,10 @@ abstract class Constraint implements ConstraintInterface
         $code .= $compiled['code'];
 
         $compiled = Collection::compile($schemaId, $schema, $checkMode, $uriRetriever, $classes);
-        $classes = $compiled['classes'];
-        $code .= $compiled['code'];
+        if ($compiled) {
+            $classes = $compiled['classes'];
+            $code .= $compiled['code'];
+        }
 
         $compiled = Object::compile($schemaId, $schema, $checkMode, $uriRetriever, $classes);
         $classes = $compiled['classes'];
@@ -300,9 +302,13 @@ abstract class Constraint implements ConstraintInterface
 trait Trait'.$classes[$schemaId]['Constraint'].'
 {
     protected function checkArray($value, $schema = null, $path = null, $i = null)
-    {
-        $collection = new '.$classes[$schemaId]['Collection'].'();
-        $this->checkValidator($collection, $value, $schema, $path, $i);
+    {';
+        if (isset($classes[$schemaId]['Collection'])) {
+            $code .= '
+            $collection = new '.$classes[$schemaId]['Collection'].'();
+            $this->checkValidator($collection, $value, $schema, $path, $i);';
+        }
+        $code .= '
     }
 
     protected function checkObject($value, $schema = null, $path = null, $i = null, $patternProperties = null)

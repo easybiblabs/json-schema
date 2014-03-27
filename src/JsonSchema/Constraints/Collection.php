@@ -40,12 +40,12 @@ class Collection extends Constraint
     public function checkNoSchema($value, $path = null, $i = null, $minItems = null, $maxItems = null, $uniqueItems = false)
     {
         // Verify minItems
-        if (null != $minItems && count($value) < $minItems) {
+        if (null !== $minItems && count($value) < $minItems) {
             $this->addError($path, "There must be a minimum of " . $minItems . " in the array");
         }
 
         // Verify maxItems
-        if (isset($maxItems) && count($value) > $maxItems) {
+        if (null !== $maxItems && count($value) > $maxItems) {
             $this->addError($path, "There must be a maximum of " . $maxItems . " in the array");
         }
 
@@ -126,6 +126,14 @@ class Collection extends Constraint
     {
         $classes[$schemaId]['Collection'] = uniqid('Collection');
 
+        $minItems = isset($schema->minItems) ? $schema->minItems : null;
+        $maxItems = isset($schema->maxItems) ? $schema->maxItems : null;
+        $uniqueItems = isset($schema->uniqueItems);
+
+        if ($minItems === null && $maxItems === null && $uniqueItems === false && !isset($schema->items)) {
+            return null;
+        }
+
         $prependCode = '';
         $code = '
 class '.$classes[$schemaId]['Collection'].' extends Collection
@@ -137,10 +145,9 @@ class '.$classes[$schemaId]['Collection'].' extends Collection
             $value,
             $path,
             $i,
-            '.var_export(isset($schema->minItems) ? $schema->minItems : null, true).',
-            '.var_export(isset($schema->maxItems) ? $schema->maxItems : null, true).',
-            '.var_export(isset($schema->uniqueItems), true).',
-            '.var_export(isset($schema->items), true).'
+            '.var_export($minItems, true).',
+            '.var_export($maxItems, true).',
+            '.var_export($uniqueItems, true).'
         );
         ';
         if (isset($schema->items)) {
