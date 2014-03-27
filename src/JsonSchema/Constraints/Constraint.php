@@ -265,8 +265,10 @@ abstract class Constraint implements ConstraintInterface
         }
 
         $compiled = Object::compile($schemaId, $schema, $checkMode, $uriRetriever, $classes);
-        $classes = $compiled['classes'];
-        $code .= $compiled['code'];
+        if ($compiled) {
+            $classes = $compiled['classes'];
+            $code .= $compiled['code'];
+        }
 
         $compiled = Type::compile($schemaId, $schema, $checkMode, $uriRetriever, $classes);
         if ($compiled) {
@@ -301,72 +303,62 @@ abstract class Constraint implements ConstraintInterface
         $code .= '
 trait Trait'.$classes[$schemaId]['Constraint'].'
 {
-    protected function checkArray($value, $schema = null, $path = null, $i = null)
-    {';
+    protected function checkArray($value, $schema = null, $path = null, $i = null) {';
         if (isset($classes[$schemaId]['Collection'])) {
             $code .= '
             $collection = new '.$classes[$schemaId]['Collection'].'();
             $this->checkValidator($collection, $value, $schema, $path, $i);';
         }
-        $code .= '
-    }
+        $code .= '}
 
-    protected function checkObject($value, $schema = null, $path = null, $i = null, $patternProperties = null)
-    {
-        $object = new '.$classes[$schemaId]['Object'].'();
-        $this->checkValidator($object, $value, $schema, $path, $i, $patternProperties);
-    }
+    protected function checkObject($value, $schema = null, $path = null, $i = null, $patternProperties = null) {';
+        if (isset($classes[$schemaId]['Object'])) {
+            $code .= '
+            $object = new '.$classes[$schemaId]['Object'].'();
+            $this->checkValidator($object, $value, $schema, $path, $i, $patternProperties);';
+        }
+        $code .= '}
 
-    protected function checkType($value, $schema = null, $path = null, $i = null)
-    {';
+    protected function checkType($value, $schema = null, $path = null, $i = null) {';
         if (isset($classes[$schemaId]['Type'])) {
             $code .= '
             $type = new '.$classes[$schemaId]['Type'].'();
             $this->checkValidator($type, $value, $schema, $path, $i);';
         }
-        $code .= '
-    }
+        $code .= '}
 
-    protected function checkString($value, $schema = null, $path = null, $i = null)
-    {';
+    protected function checkString($value, $schema = null, $path = null, $i = null) {';
         if (isset($classes[$schemaId]['String'])) {
             $code .= '
             $string = new '.$classes[$schemaId]['String'].'();
             $this->checkValidator($string, $value, $schema, $path, $i);';
         }
-        $code .= '
-    }
+        $code .= '}
 
-    protected function checkNumber($value, $schema = null, $path = null, $i = null)
-    {';
+    protected function checkNumber($value, $schema = null, $path = null, $i = null) {';
         if (isset($classes[$schemaId]['Number'])) {
             $code .= '
             $number = new '.$classes[$schemaId]['Number'].'();
             $this->checkValidator($number, $value, $schema, $path, $i);
             ';
         }
-        $code .= '
-    }
+        $code .= '}
 
-    protected function checkEnum($value, $schema = null, $path = null, $i = null)
-    {';
+    protected function checkEnum($value, $schema = null, $path = null, $i = null) {';
         if (isset($schema->enum)) {
             $code .= '
             $enum = new '.$classes[$schemaId]['Enum'].'();
             $this->checkValidator($enum, $value, $schema, $path, $i);';
         }
-        $code .= '
-    }
+        $code .= '}
 
-    protected function checkFormat($value, $schema = null, $path = null, $i = null)
-    {';
+    protected function checkFormat($value, $schema = null, $path = null, $i = null) {';
         if (isset($schema->format)) {
             $code .= '
             $format = new '.$classes[$schemaId]['Format'].'();
             $this->checkValidator($format, $value, $schema, $path, $i);';
         }
-        $code .= '
-    }
+        $code .= '}
 }';
 
         return array('code' => $code, 'classes' => $classes);

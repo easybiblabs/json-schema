@@ -151,6 +151,10 @@ class Object extends Constraint
         $additionalProperties = isset($schema->additionalProperties) ? $schema->additionalProperties : null;
         $patternProperties = isset($schema->patternProperties) ? $schema->patternProperties : null;
 
+        if ($objectDefinition === null && $additionalProperties === null && $patternProperties === null) {
+            return null;
+        }
+
         $prependCode = '';
         $code = '
 class '.$classes[$schemaId]['Object'].' extends Object
