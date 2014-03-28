@@ -246,15 +246,39 @@ class '.$classes[$schemaId]['Object'].' extends Object
 
             $property = '.static::compileGetProperty('$element', '$i', 'new Undefined()').';
             switch ($i) {';
+        $hasRequires = false;
         if ($objectDefinition) {
+            $start = true;
             foreach ($objectDefinition as $key => $definition) {
                 if ($definition) {
-                    $code .= 'case '.var_export($key, true).':
-                        $hasDefinition = true;
-                        $require = '.var_export(static::staticGetProperty($definition, 'requires'), true).';
-                        break;
-                    ';
+                    $requires = static::staticGetProperty($definition, 'requires');
+                    if ($requires !== null) {
+                        $hasRequires = true;
+                        if (!$start) {
+                            $code .= '
+                                $hasDefinition = true;
+                                $require = null;
+                                break;';
+                        }
+                    }
+                    $code .= 'case '.var_export($key, true).':';
+                    if ($requires !== null) {
+                        $code .= '
+                            $hasDefinition = true;
+                            $require = '.var_export($requires, true).';
+                            break;
+                        ';
+                        $start = true;
+                    } else {
+                        $start = false;
+                    }
                 }
+            }
+            if (!$start) {
+                $code .= '
+                    $hasDefinition = true;
+                    $require = null;
+                    break;';
             }
         }
         $code .= '
@@ -288,12 +312,14 @@ class '.$classes[$schemaId]['Object'].' extends Object
             }';
         }
 
+        if ($hasRequires) {
+            $code .= '
+                // property requires presence of another
+                if ($require && !'.static::compileGetProperty('$element', '$require', 'null').') {
+                    $this->addError($path, "the presence of the property " . $i . " requires that " . $require . " also be present");
+                }';
+        }
         $code .= '
-            // property requires presence of another
-            if ($require && !'.static::compileGetProperty('$element', '$require', 'null').') {
-                $this->addError($path, "the presence of the property " . $i . " requires that " . $require . " also be present");
-            }
-
             if (!$hasDefinition) {';
                 $id = md5(serialize(new \stdClass));
                 $compiled = Constraint::compile($id, new \stdClass, $checkMode, $uriRetriever, $classes);
