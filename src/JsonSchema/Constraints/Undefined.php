@@ -494,31 +494,29 @@ class '.$classes[$schemaId]['Undefined'].' extends Undefined
             }
         }
 
-        $code .= '
-        if (is_object($value)) {';
-            if (isset($schema->required) && is_array($schema->required) ) {
-                // Draft 4 - Required is an array of strings - e.g. "required": ["foo", ...]
-                foreach ($schema->required as $required) {
-                    $code .= '
-                    if (!property_exists($value, '.var_export($required, true).')) {
-                        $this->addError($path, "the property " . '.var_export($required, true).' . " is required");
-                    }';
-                }
-            } else if (isset($schema->required)) {
-                // Draft 3 - Required attribute - e.g. "foo": {"type": "string", "required": true}
-                if ($schema->required) {
-                    $code .= '
-                    if ($value instanceof Undefined) {
-                        $this->addError($path, "is missing and it is required");
-                    }';
-                }
-            }
+        if (isset($schema->required)) {
             $code .= '
+            if (is_object($value)) {';
+                if (isset($schema->required) && is_array($schema->required) ) {
+                    // Draft 4 - Required is an array of strings - e.g. "required": ["foo", ...]
+                    foreach ($schema->required as $required) {
+                        $code .= '
+                        if (!property_exists($value, '.var_export($required, true).')) {
+                            $this->addError($path, "the property " . '.var_export($required, true).' . " is required");
+                        }';
+                    }
+                } else if (isset($schema->required)) {
+                    // Draft 3 - Required attribute - e.g. "foo": {"type": "string", "required": true}
+                    if ($schema->required) {
+                        $code .= '
+                        if ($value instanceof Undefined) {
+                            $this->addError($path, "is missing and it is required");
+                        }';
+                    }
+                }
+                $code .= '
+            }';
         }
-
-        if (!($value instanceof Undefined)) {
-            $this->checkType($value, null, $path);
-        }';
 
         if (isset($schema->disallow)) {
             $code .= '
