@@ -143,6 +143,13 @@ class Object extends Constraint
         return $fallback;
     }
 
+    static protected function compileGetProperty($element, $property, $fallback)
+    {
+        return "
+        (((\$tmpProp = $property)===$property) && is_array($element) ? (array_key_exists($property, $element) ? $element"."[$property] : $fallback) :
+            (is_object($element) ? (property_exists($element, $property) ? $element->\$tmpProp : $fallback) : $fallback))";
+    }
+
     public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
     {
         $classes[$schemaId]['Object'] = uniqid('Object');
@@ -219,7 +226,7 @@ class '.$classes[$schemaId]['Object'].' extends Object
     {';
         foreach ($objectDefinition as $i => $value) {
             $code .= '
-            $property = $this->getProperty($element, '.var_export($i, true).', new Undefined());';
+            $property = '.static::compileGetProperty('$element', var_export($i, true), 'new Undefined()').';';
             $definition = static::staticGetProperty($objectDefinition, $i);
             $id = md5(serialize($definition));
             $compiled = Constraint::compile($id, $definition, $checkMode, $uriRetriever, $classes);
@@ -237,7 +244,7 @@ class '.$classes[$schemaId]['Object'].' extends Object
     {
         foreach ($element as $i => $value) {
 
-            $property = $this->getProperty($element, $i, new Undefined());
+            $property = '.static::compileGetProperty('$element', '$i', 'new Undefined()').';
             switch ($i) {';
         if ($objectDefinition) {
             foreach ($objectDefinition as $key => $definition) {
@@ -283,7 +290,7 @@ class '.$classes[$schemaId]['Object'].' extends Object
 
         $code .= '
             // property requires presence of another
-            if ($require && !$this->getProperty($element, $require)) {
+            if ($require && !'.static::compileGetProperty('$element', '$require', 'null').') {
                 $this->addError($path, "the presence of the property " . $i . " requires that " . $require . " also be present");
             }
 
