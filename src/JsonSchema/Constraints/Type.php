@@ -113,6 +113,48 @@ class Type extends Constraint
         throw new InvalidArgumentException((is_object($value) ? 'object' : $value) . ' is an invalid type for ' . $type);
     }
 
+    protected static function compileValidateType($type)
+    {
+        //mostly the case for inline schema
+        if (!$type) {
+            return '$isValid = true;';
+        }
+
+        if ('integer' === $type) {
+            return '$isValid = is_int($value);';
+        }
+
+        if ('number' === $type) {
+            return '$isValid = is_numeric($value) && !is_string($value);';
+        }
+
+        if ('boolean' === $type) {
+            return '$isValid = is_bool($value);';
+        }
+
+        if ('object' === $type) {
+            return '$isValid = is_object($value);';
+        }
+
+        if ('array' === $type) {
+            return '$isValid = is_array($value);';
+        }
+
+        if ('string' === $type) {
+            return '$isValid = is_string($value);';
+        }
+
+        if ('null' === $type) {
+            return '$isValid = is_null($value);';
+        }
+
+        if ('any' === $type) {
+            return '$isValid = true;';
+        }
+
+        return 'throw new \InvalidArgumentException((is_object($value) ? "object" : $value) . " is an invalid type for '.$type.'");';
+    }
+
     public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
     {
         $classes[$schemaId]['Type'] = uniqid('Type');
@@ -129,9 +171,6 @@ class '.$classes[$schemaId]['Type'].' extends Type
         if (!$type) {
             return null;
         }
-
-        $code .= '
-        $isValid = true;';
 
         if (is_array($type)) {
             $code .= '
@@ -174,8 +213,7 @@ class '.$classes[$schemaId]['Type'].' extends Type
                 $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path);
             ';
         } else {
-            $code .= '
-            $isValid = $this->validateType($value, '.var_export($type, true).');';
+            $code .= static::compileValidateType($type, true);
         }
 
         $code .= '
