@@ -155,15 +155,9 @@ class Type extends Constraint
         return 'throw new \InvalidArgumentException((is_object($value) ? "object" : $value) . " is an invalid type for '.$type.'");';
     }
 
-    public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
+    public static function compile($compiler, $schema, $checkMode = null, $uriRetriever = null)
     {
-        $classes[$schemaId]['Type'] = uniqid('Type');
-
-        $prependCode = '';
         $code = '
-class '.$classes[$schemaId]['Type'].' extends Type
-{
-    use Trait'.$classes[$schemaId]['Constraint'].';
     public function check($value = null, $schema = null, $path = null, $i = null)
     {';
         $type = isset($schema->type) ? $schema->type : null;
@@ -181,13 +175,10 @@ class '.$classes[$schemaId]['Type'].' extends Type
                 $subSchema = new \stdClass();
                 $subSchema->type = $tp;
 
-                $id = md5(serialize($subSchema));
-                $compiled = Constraint::compile($id, $subSchema, $checkMode, $uriRetriever, $classes);
-                $prependCode .= $compiled['code'];
-                $classes = $compiled['classes'];
+                Constraint::compile($compiler, $subSchema, $checkMode, $uriRetriever);
                 $code .= '
                 if (!$validatedOneType) {
-                    $validator = new '.$classes[$id]['Type'].'();
+                    $validator = new '.$compiler->getClass('Type', $subSchema).'();
                     $validator->check($value, null, $path, null);
 
                     $error = $validator->getErrors();
@@ -203,14 +194,14 @@ class '.$classes[$schemaId]['Type'].' extends Type
             $code .= '
             if (!$validatedOneType) {
                 return $this->addErrors($errors);
-            }';
+            }
+            $isValid = true;
+        ';
         } elseif (is_object($type)) {
-            $id = md5(serialize($type));
-            $compiled = Constraint::compile($id, $type, $checkMode, $uriRetriever, $classes);
-            $prependCode .= $compiled['code'];
-            $classes = $compiled['classes'];
+            Constraint::compile($compiler, $type, $checkMode, $uriRetriever);
             $code .= '
-                $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path);
+                $this->checkValidator(new '.$compiler->getClass('Undefined', $type).'(), $value, null, $path);
+                $isValid = true;
             ';
         } else {
             $code .= static::compileValidateType($type, true);
@@ -220,9 +211,8 @@ class '.$classes[$schemaId]['Type'].' extends Type
         if ($isValid === false) {
             $this->addError($path, gettype($value) . " value found, but a " . '.var_export($type, true).' . " is required");
         }
-    }
-}';
-
-        return array('code' => $prependCode.$code, 'classes' => $classes);
+    }';
+        $compiler->add('Type', $schema, $code);
+        return $compiler;
     }
 }

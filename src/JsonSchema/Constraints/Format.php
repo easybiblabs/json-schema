@@ -167,14 +167,9 @@ class Format extends Constraint
         return preg_match('/^[_a-z]+\.([_a-z]+\.?)+$/i', $host);
     }
 
-    public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
+    public static function compile($compiler, $schema, $checkMode = null, $uriRetriever = null)
     {
-        $classes[$schemaId]['Format'] = uniqid('Format');
-
         $code = '
-class '.$classes[$schemaId]['Format'].' extends Format
-{
-    use Trait'.$classes[$schemaId]['Constraint'].';
     public function check($element, $schema = null, $path = null, $i = null)
     {
         ';
@@ -184,10 +179,10 @@ class '.$classes[$schemaId]['Format'].' extends Format
             $code .= '$this->checkNoSchema($element, $path, $i, '.var_export($schema->format, true).');';
         }
         $code .= '
-    }
-}
-        ';
+    }';
 
-        return array('code' => $code, 'classes' => $classes);
+        $compiler->add('Format', $schema, $code);
+
+        return $compiler;
     }
 }

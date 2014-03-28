@@ -81,16 +81,11 @@ class Number extends Constraint
         return (float)round($modulus, max($decimals1, $decimals2));
     }
 
-    public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
+    public static function compile($compiler, $schema, $checkMode = null, $uriRetriever = null)
     {
-        $classes[$schemaId]['Number'] = uniqid('Number');
-
         $null = true;
 
         $code = '
-class '.$classes[$schemaId]['Number'].' extends Number
-{
-    use Trait'.$classes[$schemaId]['Constraint'].';
     public function check($element, $schema = null, $path = null, $i = null)
     {
         ';
@@ -166,9 +161,11 @@ class '.$classes[$schemaId]['Number'].' extends Number
             $null = false;
         }
         $code .= '
-    }
-}';
+    }';
 
-        return $null ? null : array('code' => $code, 'classes' => $classes);
+        if (!$null) {
+            $compiler->add('Number', $schema, $code);
+        }
+        return $compiler;
     }
 }

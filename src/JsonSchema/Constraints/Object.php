@@ -150,10 +150,8 @@ class Object extends Constraint
             (is_object($element) ? (property_exists($element, $property) ? $element->\$tmpProp : $fallback) : $fallback))";
     }
 
-    public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
+    public static function compile($compiler, $schema, $checkMode = null, $uriRetriever = null)
     {
-        $classes[$schemaId]['Object'] = uniqid('Object');
-
         $objectDefinition = isset($schema->properties) ? $schema->properties : null;
         $additionalProperties = isset($schema->additionalProperties) ? $schema->additionalProperties : null;
         $patternProperties = isset($schema->patternProperties) ? $schema->patternProperties : null;
@@ -162,11 +160,7 @@ class Object extends Constraint
             return null;
         }
 
-        $prependCode = '';
         $code = '
-class '.$classes[$schemaId]['Object'].' extends Object
-{
-    use Trait'.$classes[$schemaId]['Constraint'].';
     function check($element, $definition = null, $path = null, $additionalProp = null, $patternProperties = null)
     {
         if ($element instanceof Undefined) {
@@ -195,7 +189,7 @@ class '.$classes[$schemaId]['Object'].' extends Object
     public function validatePatternProperties($element, $path, $patternProperties)
     {
         $matches = array();';
-        foreach ($patternProperties as $pregex => $schema) {
+        foreach ($patternProperties as $pregex => $subSchema) {
             // Validate the pattern before using it to test for matches
             if (@preg_match('/'. $pregex . '/', '') === false) {
                 $code .= '
@@ -206,12 +200,8 @@ class '.$classes[$schemaId]['Object'].' extends Object
             foreach ($element as $i => $value) {
                 if (preg_match("/" . '.var_export($pregex, true).' . "/", $i)) {
                     $matches[] = $i;';
-                    $id = md5(serialize($schema ?: new \stdClass));
-                    $compiled = Constraint::compile($id, $schema ?: new \stdClass, $checkMode, $uriRetriever, $classes);
-                    $prependCode .= $compiled['code'];
-                    $classes = $compiled['classes'];
-                    $code .= '
-                    $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);
+                    Constraint::compile($compiler, $subSchema ?: new \stdClass, $checkMode, $uriRetriever);
+                    $code .= '$this->checkValidator(new '.$compiler->getClass('Undefined', $subSchema).'(), $value, null, $path, $i);
                 }
             }';
         }
@@ -228,12 +218,8 @@ class '.$classes[$schemaId]['Object'].' extends Object
             $code .= '
             $property = '.static::compileGetProperty('$element', var_export($i, true), 'new Undefined()').';';
             $definition = static::staticGetProperty($objectDefinition, $i);
-            $id = md5(serialize($definition));
-            $compiled = Constraint::compile($id, $definition, $checkMode, $uriRetriever, $classes);
-            $prependCode .= $compiled['code'];
-            $classes = $compiled['classes'];
-            $code .= '
-            $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $property, null, $path, '.var_export($i, true).');';
+            Constraint::compile($compiler, $definition, $checkMode, $uriRetriever);
+            $code .= '$this->checkValidator(new '.$compiler->getClass('Undefined', $definition).'(), $property, null, $path, '.var_export($i, true).');';
         }
         $code .= '
     }';
@@ -301,12 +287,8 @@ class '.$classes[$schemaId]['Object'].' extends Object
                     //this does not actually do anything
                     //$this->checkUndefined($value, null, $path, $i);
                 } else {
-                    $id = md5(serialize($additionalProperties));
-                    $compiled = Constraint::compile($id, $additionalProperties, $checkMode, $uriRetriever, $classes);
-                    $prependCode .= $compiled['code'];
-                    $classes = $compiled['classes'];
-                    $code .= '
-                    $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);';
+                    Constraint::compile($compiler, $additionalProperties, $checkMode, $uriRetriever);
+                    $code .= '$this->checkValidator(new '.$compiler->getClass('Undefined', $additionalProperties).'(), $value, null, $path, $i);';
                 }
                 $code .= '
             }';
@@ -321,18 +303,15 @@ class '.$classes[$schemaId]['Object'].' extends Object
         }
         $code .= '
             if (!$hasDefinition) {';
-                $id = md5(serialize(new \stdClass));
-                $compiled = Constraint::compile($id, new \stdClass, $checkMode, $uriRetriever, $classes);
-                $prependCode .= $compiled['code'];
-                $classes = $compiled['classes'];
-                $code .= '
-                $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);
+                Constraint::compile($compiler, new \stdClass, $checkMode, $uriRetriever);
+                $code .= '$this->checkValidator(new '.$compiler->getClass('Undefined', new \stdClass).'(), $value, null, $path, $i);
             }
         }
     }
-}
         ';
 
-        return array('code' => $prependCode.$code, 'classes' => $classes);
+        $compiler->add('Object', $schema, $code);
+
+        return $compiler;
     }
 }

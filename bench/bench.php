@@ -11,10 +11,10 @@ $data = json_decode(file_get_contents(__DIR__.'/data.json'));
 $refResolver = new JsonSchema\RefResolver($retriever);
 $refResolver->resolve($schema, 'file://' . __DIR__);
 
-$compiled = JsonSchema\Validator::compile(null, $schema);
-file_put_contents('tmp.php', $compiled['code']);
+$compiler = JsonSchema\Validator::compile('MyValidator', $schema);
+file_put_contents('tmp.php', $compiler->getCode());
 include('tmp.php');
-$validator = new $compiled['validator']();
+$validator = new JsonSchema\MyValidator();
 
 $start = microtime(true);
 

@@ -314,15 +314,9 @@ class Undefined extends Constraint
         return $jsonSchema;
     }
 
-    public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
+    public static function compile($compiler, $schema, $checkMode = null, $uriRetriever = null)
     {
-        $classes[$schemaId]['Undefined'] = uniqid('Undefined');
-
-        $prependCode = '';
         $code = '
-class '.$classes[$schemaId]['Undefined'].' extends Undefined
-{
-    use Trait'.$classes[$schemaId]['Constraint'].';
     public function check($value, $schema = null, $path = null, $i = null)
     {
         ';
@@ -378,13 +372,8 @@ class '.$classes[$schemaId]['Undefined'].' extends Undefined
                 $code .= '
                     $initErrors = $this->getErrors();';
 
-                $id = md5(serialize($allOf));
-                $compiled = Constraint::compile($id, $allOf, $checkMode, $uriRetriever, $classes);
-                $prependCode .= $compiled['code'];
-                $classes = $compiled['classes'];
-                $code .= '
-                    $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);
-                ';
+                Constraint::compile($compiler, $allOf, $checkMode, $uriRetriever);
+                $code .= '$this->checkValidator(new '.$compiler->getClass('Undefined', $allOf).'(), $value, null, $path, $i);';
 
                 $code .= '
                 $isValid = $isValid && (count($this->getErrors()) == count($initErrors));';
@@ -404,13 +393,8 @@ class '.$classes[$schemaId]['Undefined'].' extends Undefined
                 if (!$isValid) {
                     $initErrors = $this->getErrors();';
 
-                    $id = md5(serialize($anyOf));
-                    $compiled = Constraint::compile($id, $anyOf, $checkMode, $uriRetriever, $classes);
-                    $prependCode .= $compiled['code'];
-                    $classes = $compiled['classes'];
-                    $code .= '
-                        $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);
-                    ';
+                    Constraint::compile($compiler, $anyOf, $checkMode, $uriRetriever);
+                    $code .= '$this->checkValidator(new '.$compiler->getClass('Undefined', $anyOf).'(), $value, null, $path, $i);';
 
                     $code .= '
                     $isValid = (count($this->getErrors()) == count($initErrors));
@@ -433,13 +417,8 @@ class '.$classes[$schemaId]['Undefined'].' extends Undefined
                 $code .= '
                     $this->errors = array();';
 
-                $id = md5(serialize($oneOf));
-                $compiled = Constraint::compile($id, $oneOf, $checkMode, $uriRetriever, $classes);
-                $prependCode .= $compiled['code'];
-                $classes = $compiled['classes'];
-                $code .= '
-                    $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);
-                ';
+                Constraint::compile($compiler, $oneOf, $checkMode, $uriRetriever);
+                $code .= '$this->checkValidator(new '.$compiler->getClass('Undefined', $oneOf).'(), $value, null, $path, $i);';
 
                 $code .= '
                 if (count($this->getErrors()) == 0) {
@@ -475,22 +454,12 @@ class '.$classes[$schemaId]['Undefined'].' extends Undefined
             }
             if (is_array($schema->extends)) {
                 foreach ($schema->extends as $extends) {
-                    $id = md5(serialize($extends));
-                    $compiled = Constraint::compile($id, $extends, $checkMode, $uriRetriever, $classes);
-                    $prependCode .= $compiled['code'];
-                    $classes = $compiled['classes'];
-                    $code .= '
-                        $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);
-                    ';
+                    Constraint::compile($compiler, $extends, $checkMode, $uriRetriever);
+                    $code .= '$this->checkValidator(new '.$compiler->getClass('Undefined', $extends).'(), $value, null, $path, $i);';
                 }
             } else {
-                $id = md5(serialize($schema->extends));
-                $compiled = Constraint::compile($id, $schema->extends, $checkMode, $uriRetriever, $classes);
-                $prependCode .= $compiled['code'];
-                $classes = $compiled['classes'];
-                $code .= '
-                    $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);
-                ';
+                Constraint::compile($compiler, $schema->extends, $checkMode, $uriRetriever);
+                $code .= '$this->checkValidator(new '.$compiler->getClass('Undefined', $schema->extends).'(), $value, null, $path, $i);';
             }
         }
 
@@ -529,12 +498,8 @@ class '.$classes[$schemaId]['Undefined'].' extends Undefined
             $typeSchema = new \stdClass();
             $typeSchema->type = $schema->disallow;
 
-            $id = md5(serialize($typeSchema));
-            $compiled = Constraint::compile($id, $typeSchema, $checkMode, $uriRetriever, $classes);
-            $prependCode .= $compiled['code'];
-            $classes = $compiled['classes'];
-            $code .= '
-            $this->checkValidator(new '.$classes[$id]['Type'].'(), $value, null, $path, $i);
+            Constraint::compile($compiler, $typeSchema, $checkMode, $uriRetriever);
+            $code .= '$this->checkValidator(new '.$compiler->getClass('Type', $typeSchema).'(), $value, null, $path, $i);
 
             // if no new errors were raised it must be a disallowed value
             if (count($this->getErrors()) == count($initErrors)) {
@@ -545,14 +510,10 @@ class '.$classes[$schemaId]['Undefined'].' extends Undefined
         }
 
         if (isset($schema->not)) {
-            $code .= '
-            $initErrors = $this->getErrors();';
-            $id = md5(serialize($schema->not));
-            $compiled = Constraint::compile($id, $schema->not, $checkMode, $uriRetriever, $classes);
-            $prependCode .= $compiled['code'];
-            $classes = $compiled['classes'];
-            $code .= '
-            $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);
+            $code .= '$initErrors = $this->getErrors();';
+
+            Constraint::compile($compiler, $schema->not, $checkMode, $uriRetriever);
+            $code .= '$this->checkValidator(new '.$compiler->getClass('Undefined', $schema->not).'(), $value, null, $path, $i);
 
             // if no new errors were raised then the instance validated against the "not" schema
             if (count($this->getErrors()) == count($initErrors)) {
@@ -609,12 +570,8 @@ class '.$classes[$schemaId]['Undefined'].' extends Undefined
                         }';
                     }
                 } else if (is_object($dependency)) {
-                    $id = md5(serialize($dependency));
-                    $compiled = Constraint::compile($id, $dependency, $checkMode, $uriRetriever, $classes);
-                    $prependCode .= $compiled['code'];
-                    $classes = $compiled['classes'];
-                    $code .= '
-                    $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $value, null, $path, $i);';
+                    Constraint::compile($compiler, $dependency, $checkMode, $uriRetriever);
+                    $code .= '$this->checkValidator(new '.$compiler->getClass('Undefined', $dependency).'(), $value, null, $path, $i);';
                 }
                 $code .= '
             }';
@@ -622,9 +579,8 @@ class '.$classes[$schemaId]['Undefined'].' extends Undefined
         $code .= '
     }';
     }
-    $code .= '
-}';
 
-        return array('code' => $prependCode.$code, 'classes' => $classes);
+        $compiler->add('Undefined', $schema, $code);
+        return $compiler;
     }
 }

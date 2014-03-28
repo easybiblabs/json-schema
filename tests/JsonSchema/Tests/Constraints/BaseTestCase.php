@@ -38,10 +38,11 @@ abstract class BaseTestCase extends \PHPUnit_Framework_TestCase
             $this->setExpectedException('InvalidArgumentException');
         }
 
-        $compiled = Validator::compile(null, $schema, $checkMode);
-        file_put_contents('tmp.php', $compiled['code']);
+        $compiler = Validator::compile($validatorClass = uniqid('Validator'), $schema, $checkMode);
+        file_put_contents('tmp.php', $compiler->getCode());
         include('tmp.php');
-        $validator = new $compiled['validator']();
+        $validatorClass = 'JsonSchema\\'.$validatorClass;
+        $validator = new $validatorClass();
 
         $validator->check(json_decode($input));
 
@@ -71,10 +72,11 @@ abstract class BaseTestCase extends \PHPUnit_Framework_TestCase
             $this->setExpectedException('InvalidArgumentException');
         }
 
-        $compiled = Validator::compile(null, $schema, $checkMode);
-        file_put_contents('tmp.php', $compiled['code']);
+        $compiler = Validator::compile($validatorClass = uniqid('Validator'), $schema, $checkMode);
+        file_put_contents('tmp.php', $compiler->getCode());
         include('tmp.php');
-        $validator = new $compiled['validator']();
+        $validatorClass = 'JsonSchema\\'.$validatorClass;
+        $validator = new $validatorClass();
 
         $validator->check(json_decode($input));
         $this->assertTrue($validator->isValid(), print_r($validator->getErrors(), true));

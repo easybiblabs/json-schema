@@ -36,14 +36,9 @@ class Enum extends Constraint
         $this->addError($path, "does not have a value in the enumeration " . print_r($schema->enum, true));
     }
 
-    public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
+    public static function compile($compiler, $schema, $checkMode = null, $uriRetriever = null)
     {
-        $classes[$schemaId]['Enum'] = uniqid('Enum');
-
         $code = '
-class '.$classes[$schemaId]['Enum'].' extends Enum
-{
-    use Trait'.$classes[$schemaId]['Constraint'].';
     public function check($element, $schema = null, $path = null, $i = null)
     {
         ';
@@ -63,10 +58,9 @@ class '.$classes[$schemaId]['Enum'].' extends Enum
 
         $code .= '
         $this->addError($path, "does not have a value in the enumeration " . '.var_export(print_r($schema->enum, true), true).');
-    }
-}
-        ';
+    }';
 
-        return array('code' => $code, 'classes' => $classes);
+        $compiler->add('Enum', $schema, $code);
+        return $compiler;
     }
 }

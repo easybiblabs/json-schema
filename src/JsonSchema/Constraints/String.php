@@ -40,17 +40,11 @@ class String extends Constraint
         $this->checkFormat($element, $schema, $path, $i);
     }
 
-    public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
+    public static function compile($compiler, $schema, $checkMode = null, $uriRetriever = null)
     {
-        $classes[$schemaId]['String'] = uniqid('String');
-
         $null = true;
 
         $code = '
-class '.$classes[$schemaId]['String'].' extends String
-{
-    use Trait'.$classes[$schemaId]['Constraint'].';
-
     public function check($element, $schema = null, $path = null, $i = null)
     {
         ';
@@ -86,10 +80,11 @@ class '.$classes[$schemaId]['String'].' extends String
             $null = false;
         }
         $code .= '
-    }
-}
-        ';
+    }';
 
-        return $null ? null : array('code' => $code, 'classes' => $classes);
+        if (!$null) {
+            $compiler->add('String', $schema, $code);
+        }
+        return $compiler;
     }
 }

@@ -122,10 +122,8 @@ class Collection extends Constraint
         }
     }
 
-    public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
+    public static function compile($compiler, $schema, $checkMode = null, $uriRetriever = null)
     {
-        $classes[$schemaId]['Collection'] = uniqid('Collection');
-
         $minItems = isset($schema->minItems) ? $schema->minItems : null;
         $maxItems = isset($schema->maxItems) ? $schema->maxItems : null;
         $uniqueItems = isset($schema->uniqueItems);
@@ -134,11 +132,7 @@ class Collection extends Constraint
             return null;
         }
 
-        $prependCode = '';
         $code = '
-class '.$classes[$schemaId]['Collection'].' extends Collection
-{
-    use Trait'.$classes[$schemaId]['Constraint'].';
     public function check($value, $schema = null, $path = null, $i = null)
     {
         $this->checkNoSchema(
@@ -170,13 +164,8 @@ class '.$classes[$schemaId]['Collection'].' extends Collection
 
                 // First check if its defined in "items"
                 ';
-                $id = md5(serialize($schema->items));
-                $compiled = Constraint::compile($id, $schema->items, $checkMode, $uriRetriever, $classes);
-                $prependCode .= $compiled['code'];
-                $classes = $compiled['classes'];
-                $code .= '
-                    $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $v, null, $path, $k);
-                ';
+                Constraint::compile($compiler, $schema->items, $checkMode, $uriRetriever);
+                $code .= '$this->checkValidator(new '.$compiler->getClass('Undefined', $schema->items).'(), $v, null, $path, $k);';
 
                 if (isset($schema->additionalItems) && $schema->additionalItems !== false)
                 {
@@ -185,15 +174,8 @@ class '.$classes[$schemaId]['Collection'].' extends Collection
                     if (count($initErrors) < count($this->getErrors())) {
                         $secondErrors = $this->getErrors();
                         ';
-                        $id = md5(serialize($schema->additionalItems));
-                        $compiled = Constraint::compile($id, $schema->additionalItems, $checkMode, $uriRetriever, $classes);
-                        $prependCode .= $compiled['code'];
-                        $classes = $compiled['classes'];
-                        $code .= '
-                            $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $v, null, $path, $k);
-                        ';
-
-                        $code .= '
+                        Constraint::compile($compiler, $schema->additionalItems, $checkMode, $uriRetriever);
+                        $code .= '$this->checkValidator(new '.$compiler->getClass('Undefined', $schema->additionalItems).'(), $v, null, $path, $k);
                     }';
                 }
 
@@ -211,13 +193,8 @@ class '.$classes[$schemaId]['Collection'].' extends Collection
 
             $itemsCode = array();
             foreach ($schema->items as $k => $subSchema) {
-                $id = md5(serialize($subSchema));
-                $compiled = Constraint::compile($id, $subSchema, $checkMode, $uriRetriever, $classes);
-                $prependCode .= $compiled['code'];
-                $classes = $compiled['classes'];
-                $itemsCode[$k] = '
-                    $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $v, null, $path, $k);
-                ';
+                Constraint::compile($compiler, $subSchema, $checkMode, $uriRetriever);
+                $itemsCode[$k] = '$this->checkValidator(new '.$compiler->getClass('Undefined', $subSchema).'(), $v, null, $path, $k);';
             }
 
             $code .= '
@@ -237,13 +214,8 @@ class '.$classes[$schemaId]['Collection'].' extends Collection
                     ';
                     if (property_exists($schema, 'additionalItems')) {
                         if ($schema->additionalItems !== false) {
-                            $id = md5(serialize($schema->additionalItems));
-                            $compiled = Constraint::compile($id, $schema->additionalItems, $checkMode, $uriRetriever, $classes);
-                            $prependCode .= $compiled['code'];
-                            $classes = $compiled['classes'];
-                            $code .= '
-                                $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $v, null, $path, $k);
-                            ';
+                            Constraint::compile($compiler, $schema->additionalItems, $checkMode, $uriRetriever);
+                            $code .= '$this->checkValidator(new '.$compiler->getClass('Undefined', $schema->additionalItems).'(), $v, null, $path, $k);';
                         } else {
                             $code .= '
                             $this->addError(
@@ -251,13 +223,8 @@ class '.$classes[$schemaId]['Collection'].' extends Collection
                             ';
                         }
                     } else {
-                        $id = md5(serialize(new \stdClass()));
-                        $compiled = Constraint::compile($id, new \stdClass(), $checkMode, $uriRetriever, $classes);
-                        $prependCode .= $compiled['code'];
-                        $classes = $compiled['classes'];
-                        $code .= '
-                            $this->checkValidator(new '.$classes[$id]['Undefined'].'(), $v, null, $path, $k);
-                        ';
+                        Constraint::compile($compiler, new \stdClass(), $checkMode, $uriRetriever);
+                        $code .= '$this->checkValidator(new '.$compiler->getClass('Undefined', new \stdClass()).'(), $v, null, $path, $k);';
                     }
                     $code .= '
                     break;
@@ -284,9 +251,9 @@ class '.$classes[$schemaId]['Collection'].' extends Collection
             }
         }
         $code .= '
-    }
-}';
+    }';
 
-        return array('code' => $prependCode.$code, 'classes' => $classes);
+        $compiler->add('Collection', $schema, $code);
+        return $compiler;
     }
 }

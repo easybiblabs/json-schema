@@ -35,29 +35,18 @@ class Schema extends Constraint
         }
     }
 
-    public static function compile($schemaId, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
+    public static function compile($compiler, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
     {
-        $compiled = parent::compile($schemaId, $schema, $checkMode, $uriRetriever, $classes);
-        $classes = $compiled['classes'];
-        $classes[$schemaId]['Schema'] = uniqid('Schema');
+        parent::compile($compiler, $schema, $checkMode, $uriRetriever, $classes);
 
-        $code = $compiled['code'];
-        $code .= '
-trait Trait'.$classes[$schemaId]['Schema'].'
-{
+        $code = '
     public function check($value, $schema = null, $path = null, $i = null)
     {
-        $this->checkValidator(new '.$classes[$schemaId]['Undefined'].'(), $value, null, $path, $i);
+        $this->checkValidator(new '.$compiler->getClass('Undefined', $schema).'(), $value, null, $path, $i);
     }
-}
-
-class '.$classes[$schemaId]['Schema'].' extends Schema
-{
-    use Trait'.$classes[$schemaId]['Constraint'].';
-    use Trait'.$classes[$schemaId]['Schema'].';
-}
         ';
 
-        return array('code' => $code, 'classes' => $classes);
+        $compiler->add('Schema', $schema, $code);
+        return $compiler;
     }
 }

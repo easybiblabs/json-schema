@@ -42,43 +42,26 @@ class Validator extends Constraint
         $this->addErrors($validator->getErrors());
     }
 
-    public static function compile($void, $schema, $checkMode = null, $uriRetriever = null, array $classes = array())
+    public static function compile($validatorClassName, $schema, $checkMode = null, $uriRetriever = null)
     {
         if (null === $schema) {
             throw new \InvalidArgumentException("Cannot compile null schema: inline schema is not supported in compiled validators.");
         }
 
-        $schemaId = md5(serialize($schema));
+        $compiler = new ConstraintCompiler;
 
-        $compiled = Schema::compile($schemaId, $schema, $checkMode, $uriRetriever, $classes);
-        $classes = $compiled['classes'];
-        $classes[$schemaId]['Validator'] = $validatorClass = uniqid('Validator');
+        Schema::compile($compiler, $schema, $checkMode, $uriRetriever);
 
-        $code = '<?php
-namespace JsonSchema\Constraints;
-'.$compiled['code'];
-        $code .= '
-
-namespace JsonSchema;
-use JsonSchema\Constraints;
-
-trait Trait'.$classes[$schemaId]['Validator'].'
-{
+        $code = '
     public function check($value, $schema = null, $path = null, $i = null)
     {
-        $validator = new Constraints\\'.$classes[$schemaId]['Schema'].'();
+        $validator = new Constraints\\'.$compiler->getClass('Schema', $schema).'();
         $validator->check($value, null, $path, $i);
         $this->addErrors($validator->getErrors());
-    }
-}
+    }';
 
-class '.$classes[$schemaId]['Validator'].' extends Validator
-{
-    use Constraints\Trait'.$classes[$schemaId]['Constraint'].';
-    use Trait'.$classes[$schemaId]['Validator'].';
-}
-        ';
+        $compiler->add('Validator', $schema, $code, $validatorClassName);
 
-        return array('code' => $code, 'classes' => $classes, 'validator' => '\JsonSchema\\'.$validatorClass);
+        return $compiler;
     }
 }
