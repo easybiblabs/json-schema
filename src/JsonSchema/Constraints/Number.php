@@ -160,10 +160,12 @@ class '.$classes[$schemaId]['Number'].' extends Number
             $null = false;
         }
 
-        $null = $null && !isset($schema->format);
-
+        if (isset($schema->format)) {
+            $code .= '
+            $this->checkFormat($element, null, $path, $i);';
+            $null = false;
+        }
         $code .= '
-        $this->checkFormat($element, null, $path, $i);
     }
 }';
 

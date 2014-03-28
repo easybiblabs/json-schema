@@ -80,9 +80,12 @@ class '.$classes[$schemaId]['String'].' extends String
             ';
             $null = false;
         }
-        $null = $null && !isset($schema->format);
+        if (isset($schema->format)) {
+            $code .= '
+            $this->checkFormat($element, null, $path, $i);';
+            $null = false;
+        }
         $code .= '
-        $this->checkFormat($element, null, $path, $i);
     }
 }
         ';
