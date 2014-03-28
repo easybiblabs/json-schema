@@ -74,7 +74,7 @@ class '.$classes[$schemaId]['String'].' extends String
         }
         if (isset($schema->pattern)) {
             $code .= '
-            if (!preg_match("#" . str_replace("#", "\\\\#", '.var_export($schema->pattern, true).') . "#", $element)) {
+            if (!preg_match('.var_export('#'.str_replace("#", "\#", $schema->pattern).'#', true).', $element)) {
                 $this->addError($path, "does not match the regex pattern " . '.var_export($schema->pattern, true).');
             }
             ';
