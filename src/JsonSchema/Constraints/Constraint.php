@@ -231,6 +231,14 @@ abstract class Constraint implements ConstraintInterface
         $this->addErrors($validator->getErrors());
     }
 
+    public static function compileCheckValidator($validator, $value, $schema, $path, $i, $patternProperties = null)
+    {
+        return "
+        \$v = $validator;
+        \$v->check($value, $schema, $path, $i".($patternProperties ? ", $patternProperties" : "").");
+        \$this->addErrors(\$v->getErrors());";
+    }
+
     /**
      * @param string $uri JSON Schema URI
      * @return string JSON Schema contents
@@ -305,9 +313,7 @@ trait Trait'.$classes[$schemaId]['Constraint'].'
 {
     protected function checkArray($value, $schema = null, $path = null, $i = null) {';
         if (isset($classes[$schemaId]['Collection'])) {
-            $code .= '
-            $collection = new '.$classes[$schemaId]['Collection'].'();
-            $this->checkValidator($collection, $value, $schema, $path, $i);';
+            $code .= static::compileCheckValidator('new '.$classes[$schemaId]['Collection'], '$value', 'null', '$path', '$i');
         }
         $code .= '}
 
