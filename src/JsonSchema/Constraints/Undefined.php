@@ -517,6 +517,10 @@ class '.$classes[$schemaId]['Undefined'].' extends Undefined
                 $code .= '
             }';
         }
+        $code .= '
+        if (!($value instanceof Undefined)) {
+            $this->checkType($value, null, $path);
+        }';
 
         if (isset($schema->disallow)) {
             $code .= '
