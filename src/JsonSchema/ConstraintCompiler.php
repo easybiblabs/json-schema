@@ -66,6 +66,6 @@ class ConstraintCompiler
 
     public function getCode()
     {
-        return '<?php '.implode("\n", $this->code);
+        return "<?php /* This is compiled code, don't edit by hand */\n".implode("\n", $this->code);
     }
 }
