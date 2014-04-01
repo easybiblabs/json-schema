@@ -35,16 +35,26 @@ class ConstraintCompiler
                 $className = uniqid($baseClass);
             }
 
+            $class = '';
             if ($baseClass == 'Validator') {
+                $fullBaseClass = '\JsonSchema\\' . $baseClass;
                 $class = 'namespace JsonSchema;';
+                if (strpos($className, '\\') !== false) {
+                    $parts = explode('\\', $className);
+                    $className = array_pop($parts);
+                    $namespace = implode('\\', $parts);
+                    $class = "namespace $namespace;"
+                           . "use \JsonSchema\Constraints;";
+                }
             } else {
                 $class = 'namespace JsonSchema\Constraints;';
+                $fullBaseClass = '\JsonSchema\Constraints\\' . $baseClass;
             }
 
             if ($baseClass == 'Constraint') {
                 $class .= 'trait Trait'.$className.' {';
             } else {
-                $class .= 'class '.$className.' extends '.$baseClass.' {';
+                $class .= 'class '.$className.' extends '.$fullBaseClass.' {';
                 $class .= 'use \JsonSchema\Constraints\Trait'.$this->classes[$schemaId]['Constraint'].';';
             }
             $class .= $code;
@@ -66,6 +76,6 @@ class ConstraintCompiler
 
     public function getCode()
     {
-        return '<?php '.implode("\n", $this->code);
+        return "<?php /* This is compiled code, don't edit by hand */\n".implode("\n", $this->code);
     }
 }
