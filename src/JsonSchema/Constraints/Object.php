@@ -72,7 +72,6 @@ class Object extends Constraint
     {
         foreach ($element as $i => $value) {
 
-            $property = $this->getProperty($element, $i, new Undefined());
             $definition = $this->getProperty($objectDefinition, $i);
 
             // no additional properties allowed
@@ -230,7 +229,6 @@ class Object extends Constraint
     {
         foreach ($element as $i => $value) {
 
-            $property = '.static::compileGetProperty('$element', '$i', 'new Undefined()').';
             switch ($i) {';
         $hasRequires = false;
         if ($objectDefinition) {
